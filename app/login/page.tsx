@@ -15,7 +15,7 @@ export default async function Login({
   } = await supabase.auth.getSession();
 
   if (session) {
-    return redirect('/');
+    return redirect('https://www.baidu.com');
   }
 
   const signIn = async (formData: FormData) => {
