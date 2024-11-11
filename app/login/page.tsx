@@ -15,6 +15,7 @@ export default async function Login({
   } = await supabase.auth.getSession();
 
   if (session) {
+    // 登录成功后重定向到百度
     return redirect('https://www.baidu.com');
   }
 
@@ -34,7 +35,8 @@ export default async function Login({
       return redirect('/login?message=Could not authenticate user');
     }
 
-    return redirect('/');
+    // 登录成功后重定向到百度
+    return redirect('https://www.baidu.com');
   };
 
   return (
