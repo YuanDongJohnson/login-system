@@ -2,6 +2,7 @@ import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import GoogleLoginButton from '@/components/GoogleLoginButton/GoogleLoginButton'; // 确保路径正确
 
 export default async function Login({
   searchParams,
@@ -82,6 +83,15 @@ export default async function Login({
             </p>
           )}
         </form>
+
+        {/* 添加分隔线 */}
+        <hr className="border border-gray-300 my-8" />
+
+        {/* 添加社交一键登录标题 */}
+        <div className="text-center text-xl font-medium text-gray-500 mb-4">社交一键登录</div>
+
+        {/* 添加谷歌登录按钮 */}
+        <GoogleLoginButton />
 
         <Link
           href="/forgot-password"
