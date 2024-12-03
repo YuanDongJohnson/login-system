@@ -1,10 +1,10 @@
-import Header from '@/components/Header/Header';
-import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
+import { headers } from 'next/headers';
+import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import GoogleLoginButton from '@/components/GoogleLoginButton/GoogleLoginButton'; // 确保路径正确
+import Header from '@/components/Header/Header';
 
-export default async function Login({
+export default async function ForgotPassword({
   searchParams,
 }: {
   searchParams: { message: string };
@@ -16,26 +16,27 @@ export default async function Login({
   } = await supabase.auth.getSession();
 
   if (session) {
-    return redirect('/text');
+    return redirect('/');
   }
 
-  const signIn = async (formData: FormData) => {
+  const confirmReset = async (formData: FormData) => {
     'use server';
 
+    const origin = headers().get('origin');
     const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/reset-password`,
     });
 
     if (error) {
-      return redirect('/login?message=无法验证的用户');
+      return redirect('/forgot-password?message=无法验证的用户');
     }
 
-    return redirect('/text');
+    return redirect(
+      '/confirm?message=密码重置链接已发送至邮箱'
+    );
   };
 
   return (
@@ -52,10 +53,10 @@ export default async function Login({
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-          action={signIn}
+          action={confirmReset}
         >
           <label className="text-md" htmlFor="email">
-            输入电子邮箱
+            请输入邮箱
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -63,18 +64,9 @@ export default async function Login({
             placeholder="you@example.com"
             required
           />
-          <label className="text-md" htmlFor="password">
-            输入密码
-          </label>
-          <input
-            className="rounded-md px-4 py-2 bg-inherit border mb-6"
-            type="password"
-            name="password"
-            placeholder="••••••••"
-            required
-          />
+
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
-            登入
+            确认
           </button>
 
           {searchParams?.message && (
@@ -84,30 +76,11 @@ export default async function Login({
           )}
         </form>
 
-        {/* 添加分隔线 */}
-        <hr className="border border-gray-300 my-8" />
-
-        {/* 添加社交一键登录标题 */}
-        <div className="text-center text-xl font-medium text-gray-500 mb-4">社交一键登录</div>
-
-        {/* 添加谷歌登录按钮 */}
-        <GoogleLoginButton />
-
         <Link
-          href="/forgot-password"
-          className="rounded-md no-underline text-indigo-400 text-sm "
-        >
-          忘记密码
-        </Link>
-
-        <br />
-        <br />
-
-        <Link
-          href="/signup"
+          href="/login"
           className="rounded-md no-underline text-foreground text-sm"
         >
-          还没有帐号，立刻注册
+          记得密码? 去登入
         </Link>
       </div>
     </div>
