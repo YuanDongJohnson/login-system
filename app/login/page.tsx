@@ -15,7 +15,7 @@ export default async function Login({
   } = await supabase.auth.getSession();
 
   if (session) {
-    return redirect('/');
+    return redirect('/text');
   }
 
   const signIn = async (formData: FormData) => {
@@ -31,10 +31,10 @@ export default async function Login({
     });
 
     if (error) {
-      return redirect('/login?message=Could not authenticate user');
+      return redirect('/login?message=无法验证的用户');
     }
 
-    return redirect('/');
+    return redirect('/text');
   };
 
   return (
@@ -45,7 +45,7 @@ export default async function Login({
         href="/"
         className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4"
       >
-        Home
+        回首页
       </Link>
 
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
@@ -54,7 +54,7 @@ export default async function Login({
           action={signIn}
         >
           <label className="text-md" htmlFor="email">
-            Email
+            输入电子邮箱
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -63,7 +63,7 @@ export default async function Login({
             required
           />
           <label className="text-md" htmlFor="password">
-            Password
+            输入密码
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -73,7 +73,7 @@ export default async function Login({
             required
           />
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
-            Sign In
+            登入
           </button>
 
           {searchParams?.message && (
@@ -87,7 +87,7 @@ export default async function Login({
           href="/forgot-password"
           className="rounded-md no-underline text-indigo-400 text-sm "
         >
-          Forgotten Password.
+          忘记密码
         </Link>
 
         <br />
@@ -97,7 +97,7 @@ export default async function Login({
           href="/signup"
           className="rounded-md no-underline text-foreground text-sm"
         >
-          Don't have an Account? Sign Up
+          还没有帐号，立刻注册
         </Link>
       </div>
     </div>
