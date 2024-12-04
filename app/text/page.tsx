@@ -13,7 +13,7 @@ export default async function TextPage() {
   // 检查用户是否已登录
   if (!session) {
     // 如果未登录，重定向到首页
-    return redirect('/');
+    return redirect('/login');
   }
 
   // 用户已登录，渲染页面内容
