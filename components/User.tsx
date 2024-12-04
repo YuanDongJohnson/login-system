@@ -1,31 +1,49 @@
-'use client'
-
 import { createClient } from '@/utils/supabase/server';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function User() {
   const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
-  
+
   useEffect(() => {
     const fetchSession = async () => {
-      const supabase = createClient();
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
     };
-    
+
     fetchSession();
   }, []);
 
   const signOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/login');
+    } catch (err) {
+      setError(err);
+    }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   if (!session) {
-    return null; // Or a loading indicator
+    return null; // Or redirect to login page
   }
 
   return (
@@ -40,4 +58,3 @@ export default function User() {
     </div>
   );
 }
-
