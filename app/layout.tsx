@@ -2,7 +2,7 @@ import { GeistSans } from 'geist/font/sans';
 import './globals.css';
 
 export const metadata = {
-  title: 'Supabase Next Auth',
+  title: '欢迎来到老吴手工艺展馆',
   description: '',
 };
 
@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={GeistSans.className}>
+    <html lang="zh" className={GeistSans.className}>
       <body className="bg-background text-foreground">
         <main className="min-h-screen">{children}</main>
       </body>
