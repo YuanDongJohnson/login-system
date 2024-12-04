@@ -1,31 +1,44 @@
+
+'use client'
+
 import { createClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export default async function User() {
-  const supabase = createClient();
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+export default function User() {
+  const [session, setSession] = useState(null);
+  const router = useRouter();
+  
+  useEffect(() => {
+    const fetchSession = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+    
+    fetchSession();
+  }, []);
 
   const signOut = async () => {
-    'use server';
-
     const supabase = createClient();
     await supabase.auth.signOut();
-    return redirect('/login');
+    router.push('/login');
   };
 
+  if (!session) {
+    return null; // Or a loading indicator
+  }
+
   return (
-    session && (
-      <div className="flex items-center gap-4">
-        你好,欢迎 {session.user.email}!
-        <form action={signOut}>
-          <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
-            登出
-          </button>
-        </form>
-      </div>
-    )
+    <div className="flex items-center gap-4">
+      你好,欢迎 {session.user.email}!
+      <button 
+        onClick={signOut}
+        className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+      >
+        登出
+      </button>
+    </div>
   );
 }
+
