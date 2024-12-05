@@ -18,8 +18,13 @@ export default function User() {
   }, [supabase.auth])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
+    try {
+      await supabase.auth.signOut()
+      router.push('/login')
+    } catch (error) {
+      console.error('Error signing out:', error)
+      // Handle error (e.g., show an error message to the user)
+    }
   }
 
   return (
@@ -36,6 +41,4 @@ export default function User() {
     )
   )
 }
-
-
 
