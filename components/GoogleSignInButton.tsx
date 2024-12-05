@@ -14,13 +14,16 @@ export default function GoogleSignInButton() {
     try {
       setIsLoading(true)
       setError(null)
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
       if (error) throw error
+      if (data.url) {
+        router.push(data.url)
+      }
     } catch (error) {
       console.error('Error signing in with Google:', error)
       setError('Google登录失败，请稍后再试。')
