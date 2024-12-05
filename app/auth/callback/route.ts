@@ -3,25 +3,24 @@ import { createClient } from '@/utils/supabase/server'
 
 export async function GET(request: Request) {
   try {
-    const { searchParams, origin } = new URL(request.url)
-    const code = searchParams.get('code')
-    const next = searchParams.get('next') ?? '/text'
+    const requestUrl = new URL(request.url)
+    const code = requestUrl.searchParams.get('code')
 
     if (code) {
-      const supabase = await createClient()
+      const supabase = createClient()
       const { error } = await supabase.auth.exchangeCodeForSession(code)
       if (error) {
         console.error('Error exchanging code for session:', error)
         throw error
       }
-      return NextResponse.redirect(`${origin}${next}`)
     }
 
-    console.error('No code provided in the callback')
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    // URL to redirect to after sign in process completes
+    return NextResponse.redirect(requestUrl.origin)
   } catch (error) {
     console.error('Error in auth callback:', error)
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    // TODO: Add a more specific error page
+    return NextResponse.redirect(`${requestUrl.origin}/auth/auth-code-error`)
   }
 }
 
