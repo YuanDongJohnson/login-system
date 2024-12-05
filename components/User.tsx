@@ -1,60 +1,41 @@
 import { createClient } from '@/utils/supabase/server';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { redirect } from 'next/navigation';
 
-export default function User() {
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const router = useRouter();
+export default async function User() {
+  const supabase = createClient();
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const supabase = createClient();
-        const { data } = await supabase.auth.getSession();
-        setSession(data.session);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    fetchSession();
-  }, []);
+    const signOut = async (event) => {
+      'use server';
 
-  const signOut = async () => {
-    try {
+      event.preventDefault(); // 阻止表单默认提交行为
+
       const supabase = createClient();
       await supabase.auth.signOut();
-      router.push('/login');
-    } catch (err) {
-      setError(err);
-    }
-  };
+      return redirect('/login');
+    };
 
-  if (loading) {
-    return <div>Loading...</div>;
+    return (
+      session && (
+        <div className="flex items-center gap-4">
+          你好,欢迎 {session.user.email}!
+          <form onSubmit={signOut}>
+            <button
+              className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+              type="submit"
+            >
+              登出
+            </button>
+          </form>
+        </div>
+      )
+    );
+  } catch (error) {
+    console.error('Error getting session:', error);
+    return <div>无法获取会话信息</div>;
   }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (!session) {
-    return null; // Or redirect to login page
-  }
-
-  return (
-    <div className="flex items-center gap-4">
-      你好,欢迎 {session.user.email}!
-      <button 
-        onClick={signOut}
-        className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
-      >
-        登出
-      </button>
-    </div>
-  );
 }
