@@ -15,7 +15,7 @@ export default function GoogleSignInButton() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=/text`,
+          redirectTo: `${window.location.origin}/auth/callback?redirect=/`,
         },
       })
       if (error) throw error
