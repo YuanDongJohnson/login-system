@@ -1,7 +1,6 @@
 import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 export default async function ResetPassword({
   searchParams,
@@ -9,65 +8,60 @@ export default async function ResetPassword({
   searchParams: { message: string; code: string };
 }) {
   const supabase = createClient();
+  const router = useRouter();
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
   if (session) {
-    return redirect('/login');
+    router.push('/login');
   }
 
-  const resetPassword = async (formData: FormData) => {
+  const resetPassword = async (event) => {
     'use server';
+    event.preventDefault();
 
+    const formData = new FormData(event.currentTarget);
     const password = formData.get('password') as string;
-    const supabase = createClient();
 
-    if (searchParams.code) {
-      const supabase = createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(
-        searchParams.code
-      );
+    const { error } = await supabase.auth.exchangeCodeForSession(
+      searchParams.code
+    );
 
-      if (error) {
-        return redirect(
-          `/reset-password?message=无法重置密码,链接过期!`
-        );
-      }
+    if (error) {
+      router.push(`/reset-password?message=无法重置密码,链接过期!`);
+      return;
     }
 
-    const { error } = await supabase.auth.updateUser({
+    const { user } = await supabase.auth.getUser(); // 获取用户信息
+    const { error: updateError } = await supabase.auth.updateUser(user.id, {
       password,
     });
 
-    if (error) {
-      console.log(error);
-      return redirect(
-        `/reset-password?message=无法重置密码,请重试!`
-      );
+    if (updateError) {
+      console.log(updateError);
+      router.push(`/reset-password?message=无法重置密码,请重试!`);
+    } else {
+      router.push(`/login?message=你的密码已重置,请重新登入`);
     }
-
-    redirect(
-      `/login?message=你的密码已重置,请重新登入`
-    );
   };
 
   return (
     <div>
       <Header />
 
-      <Link
-        href="/"
+      <button
         className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4"
+        onClick={() => router.push('/')}
       >
         回首页
-      </Link>
+      </button>
 
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-          action={resetPassword}
+          onSubmit={resetPassword}
         >
           <label className="text-md" htmlFor="password">
             设置新密码
