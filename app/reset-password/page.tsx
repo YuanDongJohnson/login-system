@@ -22,35 +22,38 @@ export default async function ResetPassword({
     'use server';
 
     const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+
+    if (password !== confirmPassword) {
+      return redirect('/reset-password?message=密码不匹配，请重试');
+    }
+
     const supabase = createClient();
 
-    if (searchParams.code) {
-      const supabase = createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(
-        searchParams.code
-      );
+    try {
+      if (searchParams.code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(
+          searchParams.code
+        );
+
+        if (error) {
+          console.error('Error exchanging code for session:', error);
+          return redirect('/reset-password?message=无法重置密码，链接过期!');
+        }
+      }
+
+      const { error } = await supabase.auth.updateUser({ password });
 
       if (error) {
-        return redirect(
-          `/reset-password?message=无法重置密码,链接过期!`
-        );
+        console.error('Error updating password:', error);
+        return redirect('/reset-password?message=无法重置密码，请重试!');
       }
+
+      return redirect('/login?message=你的密码已重置，请重新登入');
+    } catch (error) {
+      console.error('Unexpected error during password reset:', error);
+      return redirect('/reset-password?message=发生意外错误，请重试');
     }
-
-    const { error } = await supabase.auth.updateUser({
-      password,
-    });
-
-    if (error) {
-      console.log(error);
-      return redirect(
-        `/reset-password?message=无法重置密码,请重试!`
-      );
-    }
-
-    redirect(
-      `/login?message=你的密码已重置,请重新登入`
-    );
   };
 
   return (
@@ -78,8 +81,9 @@ export default async function ResetPassword({
             name="password"
             placeholder="••••••••"
             required
+            minLength={8}
           />
-          <label className="text-md" htmlFor="password">
+          <label className="text-md" htmlFor="confirmPassword">
             确认新密码
           </label>
           <input
@@ -88,6 +92,7 @@ export default async function ResetPassword({
             name="confirmPassword"
             placeholder="••••••••"
             required
+            minLength={8}
           />
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
             重置密码
@@ -103,3 +108,4 @@ export default async function ResetPassword({
     </div>
   );
 }
+
