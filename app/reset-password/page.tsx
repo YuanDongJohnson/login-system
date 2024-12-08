@@ -1,60 +1,52 @@
-import Header from '@/components/Header/Header';
-import { createClient } from '@/utils/supabase/server';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
+'use client'
 
-export default async function ResetPassword({
-  searchParams,
-}: {
-  searchParams: { message: string; code: string };
-}) {
-  const supabase = createClient();
+import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Header from '@/components/Header/Header'
+import Link from 'next/link'
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+export default function ResetPassword() {
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const code = searchParams.get('code')
 
-  if (session) {
-    return redirect('/login');
-  }
-
-  const resetPassword = async (formData: FormData) => {
-    'use server';
-
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
+  const resetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setMessage('')
 
     if (password !== confirmPassword) {
-      return redirect('/reset-password?message=密码不匹配，请重试');
+      setMessage('密码不匹配')
+      return
     }
 
-    const supabase = createClient();
+    const formData = new FormData()
+    formData.append('password', password)
+    formData.append('confirmPassword', confirmPassword)
+    if (code) formData.append('code', code)
 
     try {
-      if (searchParams.code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(
-          searchParams.code
-        );
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        body: formData,
+      })
 
-        if (error) {
-          console.error('Error exchanging code for session:', error);
-          return redirect('/reset-password?message=无法重置密码，链接过期!');
-        }
+      const data = await response.json()
+
+      if (response.ok) {
+        setMessage('密码已成功重置')
+        // 延迟跳转，让用户看到成功消息
+        setTimeout(() => router.push('/login?message=密码已重置，请使用新密码登录'), 2000)
+      } else {
+        setMessage(data.error || '重置密码时出错')
       }
-
-      const { error } = await supabase.auth.updateUser({ password });
-
-      if (error) {
-        console.error('Error updating password:', error);
-        return redirect('/reset-password?message=无法重置密码，请重试!');
-      }
-
-      return redirect('/login?message=你的密码已重置，请重新登入');
     } catch (error) {
-      console.error('Unexpected error during password reset:', error);
-      return redirect('/reset-password?message=发生意外错误，请重试');
+      console.error('Error resetting password:', error)
+      setMessage('发生意外错误，请重试')
     }
-  };
+  }
 
   return (
     <div>
@@ -70,7 +62,7 @@ export default async function ResetPassword({
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-          action={resetPassword}
+          onSubmit={resetPassword}
         >
           <label className="text-md" htmlFor="password">
             输入新密码
@@ -82,6 +74,8 @@ export default async function ResetPassword({
             placeholder="••••••••"
             required
             minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <label className="text-md" htmlFor="confirmPassword">
             确认新密码
@@ -93,19 +87,21 @@ export default async function ResetPassword({
             placeholder="••••••••"
             required
             minLength={8}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
+          <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2" type="submit">
             重置密码
           </button>
 
-          {searchParams?.message && (
+          {message && (
             <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-              {searchParams.message}
+              {message}
             </p>
           )}
         </form>
       </div>
     </div>
-  );
+  )
 }
 
