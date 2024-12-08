@@ -19,8 +19,14 @@ export default function User() {
 
   const signOut = async () => {
     try {
-      // 首先，调用我们的自定义登出路由
-      const response = await fetch('/auth/logout', { method: 'POST' })
+      // 调用我们的自定义登出API路由
+      const response = await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
       if (!response.ok) {
         throw new Error('Logout failed')
       }
