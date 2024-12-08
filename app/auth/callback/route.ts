@@ -18,11 +18,11 @@ export async function GET(request: Request) {
       }
     } catch (error) {
       console.error('Error exchanging code for session:', error)
-      return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+      return NextResponse.redirect(`${origin}/login`)
     }
   }
 
   // If there's no code or an error occurred, redirect to the error page
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  return NextResponse.redirect(`${origin}/login`)
 }
 
