@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -7,13 +8,21 @@ export async function GET(request: Request) {
   const next = searchParams.get('next') ?? '/text'
 
   if (code) {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+    const cookieStore = cookies()
+    const supabase = createClient(cookieStore)
+    
+    try {
+      const { error } = await supabase.auth.exchangeCodeForSession(code)
+      if (!error) {
+        return NextResponse.redirect(`${origin}${next}`)
+      }
+    } catch (error) {
+      console.error('Error exchanging code for session:', error)
+      return NextResponse.redirect(`${origin}/auth/auth-code-error`)
     }
   }
 
-  // return the user to an error page with instructions
+  // If there's no code or an error occurred, redirect to the error page
   return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }
+
