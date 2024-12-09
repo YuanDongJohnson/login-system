@@ -1,123 +1,82 @@
-import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { console } from 'console';
 
-export default async function ResetPassword({
-  searchParams,
-}: {
-  searchParams: { message: string; code: string };
-}) {
-  const supabase = createClient();
+const resetPassword = async (formData: FormData) => {
+  'use server';
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const password = formData.get('password') as string;
+  const confirm_password = formData.get('confirmPassword') as string;
 
-  // 如果用户已经登录，直接重定向到登录页面
-  if (session) {
-    return redirect('/login');
+  // 确认密码是否匹配
+  if (password !== confirm_password) {
+    return redirect('/reset-password?message=两次输入的密码不一致，请重新输入');
   }
 
-  // 检查是否通过正确的方式访问重置密码页面
-  // 直接输入网址的用户没有 searchParams.code，因此会被重定向到登录页面
-  if (!searchParams.code) {
-    return redirect('/login');
-  }
-
-  const resetPassword = async (formData: FormData) => {
-    'use server';
-
-    const password = formData.get('password') as string;
-    const confirm_password = formData.get('confirmPassword') as string;
-
-    // 确认密码是否匹配
-    if (password !== confirm_password) {
-      return redirect(
-        `/reset-password?message=两次输入的密码不一致，请重新输入`
-      );
-    }
-
+  try {
     const supabase = createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(
-      searchParams.code
-    );
+    const { error } = await supabase.auth.exchangeCodeForSession(new URLSearchParams(window.location.search));
 
     if (error) {
-      return redirect(
-        `/reset-password?message=链接过期,无法重置密码`
-      );
+      console.error('Error exchanging code for session:', error);
+      return redirect('/reset-password?message=链接过期或无效，无法重置密码');
     }
 
-    const { error: updateError } = await supabase.auth.updateUser({
-      password,
-    });
+    const { error: updateError } = await supabase.auth.updateUser({ password });
 
     if (updateError) {
-      console.log(updateError);
-      return redirect(
-        `/reset-password?message=无法重置密码,再试一次`
-      );
+      console.error('Error updating password:', updateError);
+      return redirect('/reset-password?message=无法重置密码，请稍后再试');
     }
 
-    redirect(
-      `/login?message=你的密码已重置,请登入`
-    );
-  };
+    return redirect('/login?message=你的密码已重置，请登入');
+  } catch (error) {
+    console.error('Unexpected error during password reset:', error);
+    return redirect('/reset-password?message=发生意外错误，请稍后再试');
+  }
+};
 
+export default function ResetPasswordPage() {
   return (
-    <div>
-      <Header />
-
-      <Link
-        href="/"
-        className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4"
-      >
-        回首页
-      </Link>
-
-      <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
-        {searchParams.code ? (
-          <form
-            className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-            action={resetPassword}
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background">
+      <div className="flex w-full max-w-2xl flex-col items-center px-6 py-12 space-y-6 lg:px-8">
+        <h1 className="text-3xl font-bold text-center text-foreground">重置密码</h1>
+        <p className="text-center text-muted-foreground">请输入新的密码</p>
+        <form
+          className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
+          action={resetPassword}
+        >
+          <label htmlFor="password" className="text-sm font-medium">
+            密码
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring"
+            placeholder="请输入密码"
+            required
+          />
+          <label htmlFor="confirmPassword" className="text-sm font-medium">
+            确认密码
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring"
+            placeholder="请再次输入密码"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary/90"
           >
-            <label className="text-md" htmlFor="password">
-              输入新密码
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              required
-            />
-            <label className="text-md" htmlFor="password">
-              确认新密码
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
-              type="password"
-              name="confirmPassword"
-              placeholder="••••••••"
-              required
-            />
-            <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
-              重置密码
-            </button>
-
-            {searchParams?.message && (
-              <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-                {searchParams.message}
-              </p>
-            )}
-          </form>
-        ) : (
-          <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            您没有权限访问此页面。请通过电子邮件提供的链接访问。
-          </p>
-        )}
+            重置密码
+          </button>
+        </form>
       </div>
     </div>
   );
 }
+
