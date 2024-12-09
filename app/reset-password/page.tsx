@@ -1,52 +1,51 @@
-import { createClient } from '@/utils/supabase/server';
+import { getSupabase } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import { console } from 'console';
-import { useRouter } from 'next/navigation';
 
-const resetPassword = async (formData: FormData) => {
-  'use server';
+export default function ResetPasswordPage({
+  searchParams,
+}: {
+  searchParams: { message: string; code: string };
+}) {
+  const resetPassword = async (formData: FormData) => {
+    'use server';
 
-  const password = formData.get('password') as string;
-  const confirm_password = formData.get('confirmPassword') as string;
+    const password = formData.get('password') as string;
+    const confirm_password = formData.get('confirmPassword') as string;
+    const code = searchParams.code;
 
-  console.log('Password reset attempt initiated');
-
-  // 确认密码是否匹配
-  if (password !== confirm_password) {
-    console.log('Password mismatch');
-    return redirect('/reset-password?message=两次输入的密码不一致，请重新输入');
-  }
-
-  try {
-    const supabase = createClient();
-    
-    console.log('Attempting to exchange code for session');
-    const { data, error } = await supabase.auth.exchangeCodeForSession(formData.get('code') as string);
-
-    if (error) {
-      console.error('Error exchanging code for session:', error);
-      return redirect('/reset-password?message=链接过期或无效，无法重置密码');
+    if (!code) {
+      console.error('No reset code provided');
+      return redirect('/reset-password?message=无效的重置链接');
     }
 
-    console.log('Code exchanged successfully, attempting to update password');
-    const { error: updateError } = await supabase.auth.updateUser({ password });
-
-    if (updateError) {
-      console.error('Error updating password:', updateError);
-      return redirect('/reset-password?message=无法重置密码，请稍后再试');
+    if (password !== confirm_password) {
+      return redirect('/reset-password?message=两次输入的密码不一致，请重新输入');
     }
 
-    console.log('Password updated successfully');
-    return redirect('/login?message=你的密码已重置，请登入');
-  } catch (error) {
-    console.error('Unexpected error during password reset:', error);
-    return redirect('/reset-password?message=发生意外错误，请稍后再试');
-  }
-};
+    try {
+      const supabase = getSupabase();
 
-export default function ResetPasswordPage() {
-  const router = useRouter();
-  const searchParams = new URLSearchParams(window.location.search);
+      const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
+
+      if (sessionError) {
+        console.error('Error exchanging code for session:', sessionError);
+        return redirect('/reset-password?message=链接过期或无效，无法重置密码');
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+
+      if (updateError) {
+        console.error('Error updating password:', updateError);
+        return redirect('/reset-password?message=无法重置密码，请稍后再试');
+      }
+
+      return redirect('/login?message=你的密码已重置，请登入');
+    } catch (error) {
+      console.error('Unexpected error during password reset:', error);
+      return redirect('/reset-password?message=发生意外错误，请稍后再试');
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">
       <div className="flex w-full max-w-2xl flex-col items-center px-6 py-12 space-y-6 lg:px-8">
@@ -56,7 +55,6 @@ export default function ResetPasswordPage() {
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
           action={resetPassword}
         >
-          <input type="hidden" name="code" value={searchParams.get('code') || ''} />
           <label htmlFor="password" className="text-sm font-medium">
             密码
           </label>
@@ -86,7 +84,13 @@ export default function ResetPasswordPage() {
             重置密码
           </button>
         </form>
+        {searchParams?.message && (
+          <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+            {searchParams.message}
+          </p>
+        )}
       </div>
     </div>
   );
 }
+
