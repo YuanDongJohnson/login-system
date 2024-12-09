@@ -6,9 +6,24 @@ import { redirect } from 'next/navigation';
 export default async function ResetPassword({
   searchParams,
 }: {
-  searchParams: { message: string; code: string };
+  searchParams: { message?: string; code?: string; email?: string };
 }) {
   const supabase = createClient();
+
+  // 检查是否有有效的验证码和电子邮件地址
+  const isValidResetRequest = () => {
+    // 检查是否通过直接输入网址访问页面，即没有code和email参数
+    if (!searchParams.code || !searchParams.email) {
+      return false;
+    }
+    // 这里可以添加更多的验证逻辑，例如检查验证码是否过期等
+    return true;
+  };
+
+  // 如果请求无效或用户已登录，则重定向到登录页面
+  if (!isValidResetRequest()) {
+    return redirect('/login');
+  }
 
   const {
     data: { session },
@@ -22,19 +37,10 @@ export default async function ResetPassword({
     'use server';
 
     const password = formData.get('password') as string;
-    const supabase = createClient();
+    const confirmPassword = formData.get('confirmPassword') as string;
 
-    if (searchParams.code) {
-      const supabase = createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(
-        searchParams.code
-      );
-
-      if (error) {
-        return redirect(
-          `/reset-password?message=链接过期,无法重置密码`
-        );
-      }
+    if (password !== confirmPassword) {
+      return redirect(`/reset-password?message=两次输入的密码不一致`);
     }
 
     const { error } = await supabase.auth.updateUser({
@@ -44,12 +50,12 @@ export default async function ResetPassword({
     if (error) {
       console.log(error);
       return redirect(
-        `/reset-password?message=无法重置密码,再试一次`
+        `/reset-password?message=无法重置密码，请再试一次`
       );
     }
 
     redirect(
-      `/login?message=你的密码已重置,请登入`
+      `/login?message=你的密码已重置，请登录`
     );
   };
 
