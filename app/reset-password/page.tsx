@@ -10,13 +10,13 @@ export default async function ResetPassword({
 }) {
   const supabase = createClient();
 
-  // 检查是否有有效的验证码和电子邮件地址
+  // 检查是否有有效的电子邮件地址
   const isValidResetRequest = () => {
-    // 检查是否通过直接输入网址访问页面，即没有code和email参数
-    if (!searchParams.code || !searchParams.email) {
+    // 检查是否通过直接输入网址访问页面，即没有email参数
+    if (!searchParams.email) {
       return false;
     }
-    // 这里可以添加更多的验证逻辑，例如检查验证码是否过期等
+    // 这里可以添加更多的验证逻辑，例如检查电子邮件是否已注册等
     return true;
   };
 
@@ -43,20 +43,19 @@ export default async function ResetPassword({
       return redirect(`/reset-password?message=两次输入的密码不一致`);
     }
 
-    const { error } = await supabase.auth.updateUser({
-      password,
-    });
+    try {
+      // 这里需要使用提供的电子邮件和验证码来重置密码
+      // 假设 supabase.auth.resetPasswordForEmail 是一个用于重置密码的函数
+      // 并且它接受电子邮件和新密码作为参数
+      await supabase.auth.resetPasswordForEmail(searchParams.email, password);
 
-    if (error) {
+      redirect(`/login?message=你的密码已重置，请登录`);
+    } catch (error) {
       console.log(error);
       return redirect(
         `/reset-password?message=无法重置密码，请再试一次`
       );
     }
-
-    redirect(
-      `/login?message=你的密码已重置，请登录`
-    );
   };
 
   return (
