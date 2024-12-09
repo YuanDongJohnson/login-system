@@ -16,21 +16,26 @@ export const createClient = () => {
           try {
             cookieStore.set({ name, value, ...options });
           } catch (error) {
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+            console.error('Error setting cookie:', error);
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: "", ...options });
           } catch (error) {
-            // The `delete` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+            console.error('Error removing cookie:', error);
           }
         },
       },
     },
   );
 };
+
+export const getSupabase = () => {
+  const supabase = createClient();
+  if (!supabase) {
+    throw new Error('Failed to create Supabase client');
+  }
+  return supabase;
+};
+
