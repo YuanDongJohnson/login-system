@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
+import PhoneSignInButton from '@/components/PhoneSignInButton';
 
 export default async function Login({
   searchParams,
@@ -38,6 +39,7 @@ export default async function Login({
     return redirect('/text');
   };
 
+  
   return (
     <div>
       <Header />
@@ -95,6 +97,7 @@ export default async function Login({
         </div>
 
         <GoogleSignInButton />
+        <PhoneSignInButton />
 
         <Link
           href="/forgot-password"
