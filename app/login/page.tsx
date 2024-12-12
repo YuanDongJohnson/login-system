@@ -97,7 +97,7 @@ export default async function Login({
         </div>
 
         <GoogleSignInButton />
-        <PhoneSignInButton />
+        
 
         <Link
           href="/forgot-password"
