@@ -1,9 +1,7 @@
-
-// app/PasswordLoginForm.tsx
 'use client';
 import { useState } from 'react';
+import { signIn } from '../actions'; // 确保路径正确
 import Link from 'next/link';
-import { signIn } from '@app/actions'; // 确保路径正确
 
 interface PasswordLoginFormProps {
   searchParams: { message: string };
@@ -62,7 +60,7 @@ export function PasswordLoginForm({ searchParams }: PasswordLoginFormProps) {
         href="/forgot-password"
         className="text-sm text-indigo-400 text-center mt-2"
       >
-          <a>忘记密码</a>
+        <a>忘记密码</a>
       </Link>
     </form>
   );
