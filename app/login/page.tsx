@@ -1,6 +1,5 @@
 // app/login/page.tsx
-'use client'；
-
+'use client';
 import Link from 'next/link';
 import Header from '@/components/Header/Header';
 import { useState } from 'react';
