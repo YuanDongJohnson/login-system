@@ -1,7 +1,6 @@
-// app/actions.ts
-'use server'
+'use server';
 
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabaseClient';
 import { redirect } from 'next/navigation';
 
 export async function signIn(formData: FormData) {
