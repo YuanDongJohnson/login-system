@@ -1,29 +1,44 @@
-// app/PasswordLoginForm.tsx'use client';
 
+// app/PasswordLoginForm.tsx
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-
+import { signIn } from '@app/actions'; // 确保路径正确
 
 interface PasswordLoginFormProps {
   searchParams: { message: string };
-  signInAction: (formData: FormData) => Promise<void>;
 }
 
-export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginFormProps) {
+export function PasswordLoginForm({ searchParams }: PasswordLoginFormProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleSignIn = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
+    try {
+      await signIn(formData);
+    } catch (error: any) {
+      setErrorMessage(error.message);
+    }
+  };
+
   return (
     <form
       className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
-      onSubmit={(event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        signInAction(formData);
-      }}
+      onSubmit={handleSignIn}
     >
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-4"
+        type="email"
         name="email"
         placeholder="邮箱"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         required
       />
       <input
@@ -31,22 +46,24 @@ export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginF
         type="password"
         name="password"
         placeholder="密码"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         required
       />
-      <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
+      <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2" type="submit">
         登录/注册
       </button>
-
-      {searchParams?.message && (
+      {errorMessage && (
         <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-          {searchParams.message}
+          {errorMessage}
         </p>
       )}
-
-      <Link href="/forgot-password" className="text-sm text-indigo-400 text-center mt-2">
-  <a>忘记密码</a>
-</Link>
-
+      <Link
+        href="/forgot-password"
+        className="text-sm text-indigo-400 text-center mt-2"
+      >
+          <a>忘记密码</a>
+      </Link>
     </form>
   );
 }
