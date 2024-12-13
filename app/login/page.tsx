@@ -3,8 +3,8 @@ import Link from 'next/link';
 import Header from '@/components/Header/Header';
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { PhoneLoginForm } from '../PhoneLoginForm';
-import { PasswordLoginForm } from '../PasswordLoginForm';
+import { PhoneLoginForm } from '@/components/PhoneLoginForm';
+import { PasswordLoginForm } from '@/components/PasswordLoginForm';
 import { signIn as signInAction } from '../actions';
 
 export default function Login({
