@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { signIn } from '@app/actions'; // 确保路径正确
+import { signIn } from '@/app/actions'; // 确保路径正确
 import Link from 'next/link';
 
 interface PasswordLoginFormProps {
