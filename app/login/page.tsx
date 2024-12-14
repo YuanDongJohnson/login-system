@@ -1,4 +1,3 @@
-// app/login/page.tsx
 'use client';
 import Link from 'next/link';
 import Header from '@/components/Header/Header';
@@ -6,7 +5,7 @@ import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
 import { PasswordLoginForm } from '@/components/PasswordLoginForm';
-import { signIn as signInAction } from '../actions';
+import { useRouter } from 'next/navigation';
 
 export default function Login({
   searchParams,
@@ -17,6 +16,7 @@ export default function Login({
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const supabase = createClient();
+  const router = useRouter();
 
   const getQRcode = async () => {
     let { data, error } = await supabase.auth.signInWithOtp({
@@ -39,7 +39,21 @@ export default function Login({
     if (error) {
       alert(error.message);
     } else {
-      window.location.href = '/text';
+      router.push('/text');
+    }
+  };
+
+  const handlePasswordSubmit = async (formData: FormData) => {
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      alert(error.message);
+    } else {
+      router.push('/text');
     }
   };
 
@@ -87,9 +101,10 @@ export default function Login({
             setVerificationCode={setVerificationCode}
           />
         ) : (
-          <PasswordLoginForm searchParams={searchParams} signInAction={signInAction} />
+          <PasswordLoginForm searchParams={searchParams} onSubmit={handlePasswordSubmit} />
         )}
       </div>
     </div>
   );
 }
+
