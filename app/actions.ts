@@ -1,4 +1,5 @@
-'use server';
+// app/actions.ts
+'use server'
 
 import { createClient } from '@/utils/supabase/client';
 import { redirect } from 'next/navigation';
