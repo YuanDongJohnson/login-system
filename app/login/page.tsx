@@ -16,7 +16,7 @@ export default function Login({
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const router = useRouter();
-  const [supabase, setSupabase] = useState(null);
+  const [supabase, setSupabase] = useState<any>(null);
 
   useEffect(() => {
     setSupabase(createClient());
@@ -50,17 +50,22 @@ export default function Login({
   };
 
   const handlePasswordSubmit = async (formData: FormData) => {
-    if (!supabase) return;
+    if (!supabase) {
+      console.error('Supabase client not initialized');
+      return;
+    }
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      alert(error.message);
-    } else {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
       router.push('/text');
+    } catch (error) {
+      console.error('Password login error:', error);
+      throw error; // 将错误传播到 PasswordLoginForm 组件
     }
   };
 
@@ -108,7 +113,10 @@ export default function Login({
             setVerificationCode={setVerificationCode}
           />
         ) : (
-          <PasswordLoginForm searchParams={searchParams} onSubmit={handlePasswordSubmit} />
+          <PasswordLoginForm
+            searchParams={searchParams}
+            onSubmit={handlePasswordSubmit}
+          />
         )}
       </div>
     </div>
