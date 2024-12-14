@@ -3,22 +3,24 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 interface PasswordLoginFormProps {
-  searchParams: { message: string };
+  searchParams?: { message?: string };
   onSubmit: (formData: FormData) => Promise<void>;
 }
 
 export function PasswordLoginForm({ searchParams, onSubmit }: PasswordLoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
+    setError(null);
     try {
       const formData = new FormData(event.currentTarget);
       await onSubmit(formData);
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('登录失败，请重试。');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('登录失败，请重试。');
     } finally {
       setIsLoading(false);
     }
@@ -49,6 +51,12 @@ export function PasswordLoginForm({ searchParams, onSubmit }: PasswordLoginFormP
       >
         {isLoading ? '登录中...' : '登录/注册'}
       </button>
+
+      {error && (
+        <p className="mt-4 p-4 bg-red-100 text-red-700 text-center rounded">
+          {error}
+        </p>
+      )}
 
       {searchParams?.message && (
         <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
