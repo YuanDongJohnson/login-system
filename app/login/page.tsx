@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Header from '@/components/Header/Header';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
 import { PasswordLoginForm } from '@/components/PasswordLoginForm';
@@ -15,10 +15,15 @@ export default function Login({
   const [activeTab, setActiveTab] = useState<'phone' | 'password'>('phone');
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
-  const supabase = createClient();
   const router = useRouter();
+  const [supabase, setSupabase] = useState(null);
+
+  useEffect(() => {
+    setSupabase(createClient());
+  }, []);
 
   const getQRcode = async () => {
+    if (!supabase) return;
     let { data, error } = await supabase.auth.signInWithOtp({
       phone: phone,
     });
@@ -31,6 +36,7 @@ export default function Login({
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!supabase) return;
     let { data, error } = await supabase.auth.verifyOtp({
       phone: phone,
       token: verificationCode,
@@ -44,6 +50,7 @@ export default function Login({
   };
 
   const handlePasswordSubmit = async (formData: FormData) => {
+    if (!supabase) return;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const { data, error } = await supabase.auth.signInWithPassword({
