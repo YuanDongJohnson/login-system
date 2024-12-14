@@ -13,9 +13,15 @@ export function PasswordLoginForm({ searchParams, onSubmit }: PasswordLoginFormP
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    const formData = new FormData(event.currentTarget);
-    await onSubmit(formData);
-    setIsLoading(false);
+    try {
+      const formData = new FormData(event.currentTarget);
+      await onSubmit(formData);
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('登录失败，请重试。');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -26,6 +32,7 @@ export function PasswordLoginForm({ searchParams, onSubmit }: PasswordLoginFormP
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-4"
         name="email"
+        type="email"
         placeholder="邮箱"
         required
       />
@@ -36,7 +43,10 @@ export function PasswordLoginForm({ searchParams, onSubmit }: PasswordLoginFormP
         placeholder="密码"
         required
       />
-      <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2" disabled={isLoading}>
+      <button 
+        className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2" 
+        disabled={isLoading}
+      >
         {isLoading ? '登录中...' : '登录/注册'}
       </button>
 
