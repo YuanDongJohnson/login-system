@@ -5,7 +5,7 @@ import Header from '@/components/Header/Header';
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
-import { PasswordLoginForm } from '@/components/PasswordLoginForm';
+import { PasswordLoginForm } from '@/components/PasswordLoginForm/PasswordLoginForm';
 import { signIn as signInAction } from '../actions';
 
 export default function Login({
