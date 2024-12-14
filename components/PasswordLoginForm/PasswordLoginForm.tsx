@@ -11,7 +11,7 @@ export function PasswordLoginForm({ searchParams }) {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/app/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export function PasswordLoginForm({ searchParams }) {
 
       if (response.ok) {
         // 处理登录成功的情况，比如重定向到主页
-        window.location.href = '/';
+        window.location.href = '/text';
       } else {
         // 处理登录失败的情况
         const data = await response.json();
