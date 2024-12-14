@@ -41,11 +41,10 @@ required
 </p>
 )}
 
-<Link
-href="/forgot-password"
-className="text-sm text-indigo-400 text-center mt-2"
->
-忘记密码
+<Link href="/forgot-password" className="text-sm text-indigo-400 text-center mt-2">
+  <a>忘记密码</a>
 </Link>
+
 </form>
 );
+}
