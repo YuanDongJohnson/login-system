@@ -1,8 +1,9 @@
+// components/PasswordLoginForm/PasswordLoginForm.tsx
 import { useState } from 'react';
 import Link from 'next/link';
-import styles from './PasswordLoginForm.module.css'; // 假设你有一个CSS模块
+import styles from './PasswordLoginForm.module.css'; // 引入样式文件
 
-export function PasswordLoginForm() {
+export function PasswordLoginForm({ searchParams }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -34,11 +35,11 @@ export function PasswordLoginForm() {
 
   return (
     <form
-      className={styles.form}
+      className={styles.passwordLoginFormContainer}
       onSubmit={handleLogin}
     >
       <input
-        className={styles.input}
+        className={styles.inputField}
         type="email"
         name="email"
         placeholder="邮箱"
@@ -47,7 +48,7 @@ export function PasswordLoginForm() {
         required
       />
       <input
-        className={styles.input}
+        className={styles.inputField}
         type="password"
         name="password"
         placeholder="密码"
@@ -55,14 +56,14 @@ export function PasswordLoginForm() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      <button className={styles.button} type="submit">
+      <button className={styles.loginButton} type="submit">
         登录/注册
       </button>
       {message && (
-        <p className={styles.message}>{message}</p>
+        <p className={styles.errorMessage}>{message}</p>
       )}
       <Link href="/forgot-password">
-        <a className={styles.forgotPassword}>忘记密码</a>
+        <a className={styles.forgotPasswordLink}>忘记密码</a>
       </Link>
     </form>
   );
