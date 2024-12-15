@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import styles from './PasswordLoginForm.module.css';
-import { createClient } from '@/utils/supabase/client';  // 确保这是正确的路径
+import { supabase } from '@/utils/supabase/client'; // 确保路径正确
 
 interface SearchParams {
   message: string;
