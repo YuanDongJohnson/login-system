@@ -27,7 +27,9 @@ export default function ClientWrapper({ children }: { children: React.ReactNode[
           密码
         </button>
       </div>
-      {children && (activeTab === 'phone' ? children[0] : children[1])}
+      {React.Children.toArray(children).length > 0 && (
+        activeTab === 'phone' ? React.Children.toArray(children)[0] : React.Children.toArray(children)[1]
+      )}
     </>
   );
 }
