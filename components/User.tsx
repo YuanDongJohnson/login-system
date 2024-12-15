@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from '@/utils/supabase/client'; // 确保路径正确
+import { createClient } from '@/utils/supabase/client'; // 确保路径正确
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
