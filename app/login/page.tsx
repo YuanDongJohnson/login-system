@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import Header from '@/components/Header/Header';
 import { useState } from 'react';
-import { supabase } from '@/utils/supabase/client'; // 确保路径正确
+import { createClient } from '@/utils/supabase/client';
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
-import { PasswordLoginForm } from '@/components/PasswordLoginForm/PasswordLoginForm';
+import { PasswordLoginForm } from '@/components/PasswordLoginForm';
+import { signIn as signInAction } from '../actions';
 
 export default function Login({
   searchParams,
@@ -86,7 +87,7 @@ export default function Login({
             setVerificationCode={setVerificationCode}
           />
         ) : (
-          <PasswordLoginForm searchParams={searchParams} />
+          <PasswordLoginForm searchParams={searchParams} signInAction={signInAction} />
         )}
       </div>
     </div>
