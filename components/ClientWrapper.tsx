@@ -1,15 +1,22 @@
 import React from 'react';
 
-export default function ClientWrapper({ children }: { children: React.ReactNode[] }) {
+export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   const [activeTab, setActiveTab] = React.useState<'phone' | 'password'>('phone');
 
-  // 确保 children 不是 null 或 undefined，并且至少有两个元素
-  if (React.Children.count(children) < 2) {
-    // 如果 children 数量不足，返回一个错误提示或者 null
-    return <div>Error: Insufficient children props.</div>;
-  }
+  // 定义两个状态来存储子组件
+  const [phoneComponent, setPhoneComponent] = React.useState<React.ReactNode>(null);
+  const [passwordComponent, setPasswordComponent] = React.useState<React.ReactNode>(null);
 
-  const childArray = React.Children.toArray(children);
+  // 克隆 children 并分配到两个状态中
+  React.useEffect(() => {
+    React.Children.forEach(children, (child, index) => {
+      if (index === 0) {
+        setPhoneComponent(child);
+      } else if (index === 1) {
+        setPasswordComponent(child);
+      }
+    });
+  }, [children]);
 
   return (
     <>
@@ -35,7 +42,8 @@ export default function ClientWrapper({ children }: { children: React.ReactNode[
           密码
         </button>
       </div>
-      {activeTab === 'phone' ? childArray[0] : childArray[1]}
+      {activeTab === 'phone' && phoneComponent}
+      {activeTab === 'password' && passwordComponent}
     </>
   );
 }
