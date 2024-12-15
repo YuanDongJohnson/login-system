@@ -1,30 +1,29 @@
 // components/PasswordLoginForm/PasswordLoginForm.tsx
 import { useState } from 'react';
-import Link from 'next/link'; // 导入Link组件
-import styles from './PasswordLoginForm.module.css'; // 导入CSS模块
+import { createClient } from '@/utils/supabase/client'; // 确保这个路径是正确的
+import styles from './PasswordLoginForm.module.css';
 
 export function PasswordLoginForm({ searchParams }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const supabase = createClient(); // 在组件内部创建 Supabase 客户端
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    // 这里应该是你的登录逻辑，可能是调用一个API或者服务器端的登录函数
-    // 由于你使用的是SSR，确保这部分逻辑在服务器端执行或者通过getServerSideProps/getInitialProps等方法处理
     try {
-      // 假设登录成功
-      // 这里替换为你的实际登录逻辑，例如API调用
-      // const response = await yourLoginFunction(email, password);
-      // if (response.success) {
-      //   重定向到/text页面
-      window.location.href = '/text';
-      // } else {
-      //   setMessage(response.message);
-      // }
+      const { data, error } = await supabase.auth.signIn({
+        email: email,
+        password: password,
+      });
+      if (error) {
+        throw error; // 抛出错误以便下面的 catch 块可以捕获
+      }
+      // 登录成功后的逻辑
+      window.location.href = '/text'; // 重定向到成功页面或其他逻辑
     } catch (error) {
       console.error('登录请求失败:', error);
-      setMessage('登录请求失败');
+      setMessage(error.message || '登录请求失败');
     }
   };
 
@@ -54,12 +53,9 @@ export function PasswordLoginForm({ searchParams }) {
       {message && (
         <p className={styles.errorMessage}>{message}</p>
       )}
-      {/* 使用Link组件创建“忘记密码？”链接 */}
-      <div className={styles.forgotPasswordLink}>
-        <Link href="/forgot-password">
-          <a>忘记密码？</a>
-        </Link>
-      </div>
+      <a href="/forgot-password" className={styles.forgotPasswordLink}>
+        忘记密码？
+      </a>
     </form>
   );
 }
