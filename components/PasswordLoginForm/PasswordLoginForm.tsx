@@ -2,7 +2,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import styles from './PasswordLoginForm.module.css';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client'; // 确保这是正确的路径
+
+// 创建 Supabase 客户端实例
+const supabase = createClient();
 
 interface SearchParams {
   message: string;
@@ -17,7 +20,8 @@ export function PasswordLoginForm({ searchParams }: PasswordLoginFormProps) {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState<string | undefined>(undefined);
 
-  const handleLogin = async (event) => {
+  // 为 handleLogin 函数的 event 参数指定 React.FormEvent 类型
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const { data, error } = await supabase.auth.signIn({
