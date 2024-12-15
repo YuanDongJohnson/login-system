@@ -1,9 +1,7 @@
-'use client';
+import React from 'react';
 
-import { useState } from 'react';
-
-export default function ClientWrapper({ children }: { children: React.ReactNode }) {
-  const [activeTab, setActiveTab] = useState<'phone' | 'password'>('phone');
+export default function ClientWrapper({ children }: { children: React.ReactNode[] }) {
+  const [activeTab, setActiveTab] = React.useState<'phone' | 'password'>('phone');
 
   return (
     <>
@@ -29,8 +27,7 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
           密码
         </button>
       </div>
-      {activeTab === 'phone' ? children[0] : children[1]}
+      {children && (activeTab === 'phone' ? children[0] : children[1])}
     </>
   );
 }
-
