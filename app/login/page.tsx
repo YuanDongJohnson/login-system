@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
 import { PasswordLoginForm } from '@/components/PasswordLoginForm/PasswordLoginForm';
-import { signIn as signInAction } from '../actions';
 
 export default function Login({
   searchParams,
@@ -87,7 +86,7 @@ export default function Login({
             setVerificationCode={setVerificationCode}
           />
         ) : (
-          <PasswordLoginForm searchParams={searchParams} signInAction={signInAction} />
+          <PasswordLoginForm searchParams={searchParams} />
         )}
       </div>
     </div>
