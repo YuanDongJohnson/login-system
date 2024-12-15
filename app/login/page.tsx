@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Header from '@/components/Header/Header';
 import { useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
+import { supabase } from '@/utils/supabase/client'; // 确保路径正确
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
 import { PasswordLoginForm } from '@/components/PasswordLoginForm/PasswordLoginForm';
 
