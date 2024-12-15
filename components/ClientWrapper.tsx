@@ -4,9 +4,12 @@ export default function ClientWrapper({ children }: { children: React.ReactNode[
   const [activeTab, setActiveTab] = React.useState<'phone' | 'password'>('phone');
 
   // 确保 children 不是 null 或 undefined，并且至少有两个元素
-  if (!children || children.length < 2) {
-    return null; // 或者返回一个错误提示组件
+  if (React.Children.count(children) < 2) {
+    // 如果 children 数量不足，返回一个错误提示或者 null
+    return <div>Error: Insufficient children props.</div>;
   }
+
+  const childArray = React.Children.toArray(children);
 
   return (
     <>
@@ -32,7 +35,7 @@ export default function ClientWrapper({ children }: { children: React.ReactNode[
           密码
         </button>
       </div>
-      {activeTab === 'phone' ? children[0] : children[1]}
+      {activeTab === 'phone' ? childArray[0] : childArray[1]}
     </>
   );
 }
