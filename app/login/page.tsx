@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Header from '@/components/Header/Header';
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
 import { PasswordLoginForm } from '@/components/PasswordLoginForm';
-import { signIn as signInAction } from '../actions';
+import { signIn as signInAction } from '../action';
 import ClientWrapper from '@/components/ClientWrapper';
 
 export default function Login({
