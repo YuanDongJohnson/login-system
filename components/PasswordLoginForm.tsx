@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface PasswordLoginFormProps {
   searchParams: { message: string };
@@ -8,14 +9,24 @@ interface PasswordLoginFormProps {
 }
 
 export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginFormProps) {
+  const router = useRouter();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    try {
+      await signInAction(formData);
+      router.push('/text');
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('登录失败，请重试。');
+    }
+  };
+
   return (
     <form
       className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
-      onSubmit={(event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        signInAction(formData);
-      }}
+      onSubmit={handleSubmit}
     >
       <input
         className="rounded-md px-4 py-2 bg-inherit border mb-4"
