@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
 
 export function PhoneLoginForm() {
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const supabase = createClient();
+  const router = useRouter();
 
   const getQRcode = async () => {
     let { data, error } = await supabase.auth.signInWithOtp({
@@ -29,7 +31,7 @@ export function PhoneLoginForm() {
     if (error) {
       alert(error.message);
     } else {
-      window.location.href = '/text';
+      router.push('/text');
     }
   };
 
