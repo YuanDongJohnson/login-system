@@ -9,7 +9,7 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = createClient()
     
     try {
       const { error } = await supabase.auth.exchangeCodeForSession(code)
@@ -18,10 +18,10 @@ export async function GET(request: Request) {
       }
     } catch (error) {
       console.error('Error exchanging code for session:', error)
+      return NextResponse.redirect(`${origin}/login`)
     }
   }
 
-  // If there's no code or an error occurred, redirect to the login page
+  // If there's no code or an error occurred, redirect to the error page
   return NextResponse.redirect(`${origin}/login`)
 }
-
