@@ -1,22 +1,31 @@
-// app/actions.ts
 'use server'
 
-import { createClient } from '@/utils/supabase/client';
-import { redirect } from 'next/navigation';
+import { createClient } from '@/utils/supabase/server'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 export async function signIn(formData: FormData) {
-const email = formData.get('email') as string;
-const password = formData.get('password') as string;
-const supabase = createClient();
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const cookieStore = cookies()
+  const supabase = createClient(cookieStore)
 
-const { error } = await supabase.auth.signInWithPassword({
-email,
-password,
-});
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
 
-if (error) {
-throw new Error('无法验证的用户');
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { error: null }
 }
 
-return redirect('/text');
+export async function signOut() {
+  const cookieStore = cookies()
+  const supabase = createClient(cookieStore)
+  await supabase.auth.signOut()
+  return redirect('/login')
 }
+
