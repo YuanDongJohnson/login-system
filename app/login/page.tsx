@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Header from '@/components/Header/Header';
 import { PhoneLoginForm } from '@/components/PhoneLoginForm';
 import { PasswordLoginForm } from '@/components/PasswordLoginForm';
-import { signIn } from '../actions';
+import { signIn as signInAction } from '../actions';
 import ClientWrapper from '@/components/ClientWrapper';
 
 export default function Login({
@@ -23,7 +23,7 @@ export default function Login({
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <ClientWrapper>
           <PhoneLoginForm />
-          <PasswordLoginForm searchParams={searchParams} signInAction={signIn} />
+          <PasswordLoginForm searchParams={searchParams} signInAction={signInAction} />
         </ClientWrapper>
       </div>
     </div>
