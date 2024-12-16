@@ -1,22 +1,19 @@
-import React from 'react';
+'use client';
 
-export default function ClientWrapper({ children }: { children: React.ReactNode }) {
-  const [activeTab, setActiveTab] = React.useState<'phone' | 'password'>('phone');
+import React, { useState, ReactNode } from 'react';
 
-  // 定义两个状态来存储子组件
-  const [phoneComponent, setPhoneComponent] = React.useState<React.ReactNode>(null);
-  const [passwordComponent, setPasswordComponent] = React.useState<React.ReactNode>(null);
+interface ClientWrapperProps {
+  children: [ReactNode, ReactNode];
+}
 
-  // 克隆 children 并分配到两个状态中
-  React.useEffect(() => {
-    React.Children.forEach(children, (child, index) => {
-      if (index === 0) {
-        setPhoneComponent(child);
-      } else if (index === 1) {
-        setPasswordComponent(child);
-      }
-    });
-  }, [children]);
+export default function ClientWrapper({ children }: ClientWrapperProps) {
+  const [activeTab, setActiveTab] = useState<'phone' | 'password'>('phone');
+
+  // Ensure children is an array with exactly two elements
+  if (!Array.isArray(children) || children.length !== 2) {
+    console.error('ClientWrapper expects exactly two children');
+    return null;
+  }
 
   return (
     <>
@@ -42,8 +39,8 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
           密码
         </button>
       </div>
-      {activeTab === 'phone' && phoneComponent}
-      {activeTab === 'password' && passwordComponent}
+      {activeTab === 'phone' ? children[0] : children[1]}
     </>
   );
 }
+
