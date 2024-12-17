@@ -19,11 +19,14 @@ export default async function TextPage() {
 
   // 用户已登录，渲染页面内容
   return (
-    <div>
-      <Header />
-      {/* 将User组件放在最底层 */}
-      <User style={{ position: 'absolute', right: '20px', top: '20px', zIndex: -1 }} />
-      <Text />
+    <div style={{ position: 'relative' }}> {/* 确保父容器是相对定位 */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1 }}> {/* 一个覆盖整个屏幕的层 */}
+        <Header />
+      </div>
+      <User style={{ position: 'fixed', top: '20px', right: '20px', zIndex: -1 }} /> {/* User组件在最底层 */}
+      <div style={{ position: 'relative', zIndex: 2 }}> {/* 确保Text组件在User组件之上 */}
+        <Text />
+      </div>
     </div>
   );
 }
