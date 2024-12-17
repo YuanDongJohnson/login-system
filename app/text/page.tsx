@@ -21,7 +21,10 @@ export default async function TextPage() {
   return (
     <div>
       <Header />
-      <Text />
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', flexDirection: 'column' }}>
+        <Text />
+        <User style={{ alignSelf: 'flex-end' }} />
+      </div>
     </div>
   );
 }
