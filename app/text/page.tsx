@@ -15,10 +15,12 @@ export default async function TextPage() {
   return (
     <div className="relative min-h-screen">
       <div className="fixed top-0 left-0 right-0 z-10">
-        <Header className="w-full" />
-      </div>
-      <div className="fixed top-4 right-4 z-20">
-        <User />
+        <div className="relative">
+          <Header className="w-full" />
+          <div className="absolute top-0 right-0 z-20 p-2">
+            <User />
+          </div>
+        </div>
       </div>
       <div className="pt-16 px-4">
         <div className="flex flex-col items-center">
