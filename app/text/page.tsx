@@ -21,8 +21,8 @@ export default async function TextPage() {
   return (
     <div>
       <Header />
-      {/* 添加一个固定定位的div来放置User组件 */}
-      <div style={{ position: 'fixed', top: '16px', right: '16px', zIndex: 1000 }}>
+      {/* 添加一个绝对定位的div来放置User组件，仅向右平移 */}
+      <div style={{ position: 'absolute', top: '0', right: '16px', zIndex: 1000 }}>
         <User />
       </div>
       <Text />
