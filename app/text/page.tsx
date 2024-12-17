@@ -2,7 +2,7 @@ import Header from '@/components/Header/Header';
 import { Text } from '@/components/Text';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import User from '../User';
+import User from '@/components/User';
 
 export default async function TextPage() {
   const supabase = createClient();
