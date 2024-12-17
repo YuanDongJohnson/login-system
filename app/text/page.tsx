@@ -21,7 +21,6 @@ export default async function TextPage() {
   return (
     <div>
       <Header />
-<User />
       <Text />
     </div>
   );
