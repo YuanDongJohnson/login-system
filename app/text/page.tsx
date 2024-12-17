@@ -2,7 +2,6 @@ import Header from '@/components/Header/Header';
 import { Text } from '@/components/Text';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import User from '@/components/User';
 
 export default async function TextPage() {
   // 创建 Supabase 客户端实例
@@ -20,11 +19,16 @@ export default async function TextPage() {
   // 用户已登录，渲染页面内容
   return (
     <div>
-      <Header />
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', flexDirection: 'column' }}>
-        <Text />
-        <User style={{ alignSelf: 'flex-end' }} />
-      </div>
+      <Header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        zIndex: 9999,
+        backgroundColor: '#fff', // 可以根据需要调整背景颜色
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)' // 可以根据需要调整阴影效果
+      }} />
+      <Text />
     </div>
   );
 }
