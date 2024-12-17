@@ -1,5 +1,3 @@
-import User from '../User';
-
 export const Text = () => {
   return (
     <div className="relative isolate px-6 lg:px-8">
@@ -35,8 +33,6 @@ export const Text = () => {
           }}
         ></div>
       </div>
-      {/* 用户组件，定位在右上角 */}
-      <User style={{ position: 'absolute', top: '16px', right: '16px' }} />
     </div>
   );
 };
