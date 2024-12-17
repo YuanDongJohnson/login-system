@@ -21,8 +21,8 @@ export default async function TextPage() {
   return (
     <div>
       <Header />
-      {/* 直接在User组件上应用样式 */}
-      <User style={{ position: 'absolute', right: '20px', top: '20px' }} />
+      {/* 将User组件放在最底层 */}
+      <User style={{ position: 'absolute', right: '20px', top: '20px', zIndex: -1 }} />
       <Text />
     </div>
   );
