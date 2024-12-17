@@ -21,10 +21,8 @@ export default async function TextPage() {
   return (
     <div>
       <Header />
-      {/* 添加一个绝对定位的div来放置User组件，仅向右平移 */}
-      <div style={{ position: 'absolute', top: '0', right: '16px', zIndex: 1000 }}>
-        <User />
-      </div>
+      {/* 直接在User组件上应用样式 */}
+      <User style={{ position: 'absolute', right: '20px', top: '20px' }} />
       <Text />
     </div>
   );
