@@ -1,6 +1,8 @@
+import User from '@/components/User';
 export const Text = () => {
   return (
     <div className="relative isolate px-6 lg:px-8">
+      <User />
       <div
         className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl"
         aria-hidden="true"
