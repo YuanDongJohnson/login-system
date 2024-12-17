@@ -1,8 +1,8 @@
 import Header from '@/components/Header/Header';
+import User from '@/components/User';
 import { Text } from '@/components/Text';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import User from '../User';
 
 export default async function TextPage() {
   // 创建 Supabase 客户端实例
@@ -19,13 +19,12 @@ export default async function TextPage() {
 
   // 用户已登录，渲染页面内容
   return (
-    <div style={{ position: 'relative' }}> {/* 确保父容器是相对定位 */}
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1 }}> {/* 一个覆盖整个屏幕的层 */}
-        <Header />
-      </div>
-      <User style={{ position: 'fixed', top: '20px', right: '20px', zIndex: -1 }} /> {/* User组件在最底层 */}
-      <div style={{ position: 'relative', zIndex: 2 }}> {/* 确保Text组件在User组件之上 */}
-        <Text />
+    <div className="relative"> {/* 添加了一个相对定位的容器 */}
+      <Header />
+      <Text />
+      {/* User组件布局在右上方，并通过CSS向右平移 */}
+      <div className="absolute top-0 right-0" style={{ transform: 'translateX(20px)' }}>
+        <User />
       </div>
     </div>
   );
