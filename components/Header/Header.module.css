@@ -1,9 +1,8 @@
 .header {
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgb(27, 27, 29);
-  margin-bottom: 1rem;
-  width: 50%; /* 设置宽度为元素父容器宽度的50% */
+padding: 1rem 2rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid rgb(27, 27, 29);
+margin-bottom: 1rem;
 }
