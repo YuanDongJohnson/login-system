@@ -2,6 +2,7 @@ import Header from '@/components/Header/Header';
 import { Text } from '@/components/Text';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import User from '@components/User/User';
 
 export default async function TextPage() {
   // 创建 Supabase 客户端实例
@@ -20,6 +21,7 @@ export default async function TextPage() {
   return (
     <div>
       <Header />
+<User />
       <Text />
     </div>
   );
