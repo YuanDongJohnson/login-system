@@ -1,18 +1,18 @@
 'use client'
 
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function User() {
-  const [userIdentifier, setUserIdentifier] = useState<string | null>(null)
+  const [email, setEmail] = useState<string | null>(null)
   const supabase = createClient()
   const router = useRouter()
 
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      setUserIdentifier(user?.phone || user?.email || null)
+      setEmail(user?.email ?? null)
     }
     getUser()
   }, [supabase.auth])
@@ -23,12 +23,12 @@ export default function User() {
   }
 
   return (
-    userIdentifier && (
-      <div className="flex items-center gap-4 text-sm text-gray-100 bg-gray-800 bg-opacity-50 p-2 rounded-md">
-        <span>亲爱的, {userIdentifier} 你好!</span>
+    email && (
+      <div className="flex items-center gap-4">
+        亲爱的, {email} 你好!
         <button 
           onClick={signOut}
-          className="py-1 px-2 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover text-xs"
+          className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
         >
           登出
         </button>
@@ -36,4 +36,3 @@ export default function User() {
     )
   )
 }
-
