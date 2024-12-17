@@ -2,7 +2,7 @@ import Header from '@/components/Header/Header';
 import { Text } from '@/components/Text';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import User from '@/components/User';
+import User from '../User';
 
 export default async function TextPage() {
   const supabase = createClient();
@@ -20,8 +20,10 @@ export default async function TextPage() {
       <div className="fixed top-4 right-4 z-20">
         <User />
       </div>
-      <div className="pt-16">
-        <Text />
+      <div className="pt-16 px-4">
+        <div className="flex flex-col items-center">
+          <Text />
+        </div>
       </div>
     </div>
   );
