@@ -12,7 +12,8 @@ export const Text = () => {
           }}
         ></div>
       </div>
-      <div className="mx-auto max-w-2xl lg:py-16">
+      {/* 使用flex布局使内容垂直居中 */}
+      <div className="mx-auto max-w-2xl lg:py-16 flex flex-col items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-100 sm:text-6xl">
             一个测试页面
