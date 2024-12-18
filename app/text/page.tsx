@@ -20,10 +20,12 @@ export default async function TextPage() {
   // 用户已登录，渲染页面内容
   return (
     <div className="relative"> {/* 添加了一个相对定位的容器 */}
-      <Header />
+      <div className="header"> {/* 应用.header样式 */}
+        <Header />
+      </div>
       <Text />
-      {/* User组件布局在右上方，并通过CSS向右平移 */}
-      <div className="absolute top-0 right-0" style={{ transform: 'translateX(20px)' }}>
+      {/* User组件也应用.header样式，并放置在Header旁边 */}
+      <div className="header">
         <User />
       </div>
     </div>
