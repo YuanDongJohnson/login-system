@@ -1,17 +1,10 @@
 export const Text = () => {
   return (
     <div className="relative isolate px-6 lg:px-8">
-      {/* Header样式的div */}
-      <div className="header">
-        <div className="flex items-center justify-between">
-          {/* 左侧内容，比如Logo */}
-          <div>Logo</div>
-          {/* 右侧内容，比如菜单或用户信息 */}
-          <div>Menu</div>
-        </div>
-      </div>
+      {/* Header样式的div，仅作为占位符 */}
+      <div className="header" />
 
-      {/* 文字内容区域，放置在Header下方 */}
+      {/* 文字内容区域，放置在Header下方，并添加适当的间距 */}
       <div className="mx-auto max-w-2xl pt-20"> {/* pt-20为Header下方添加间距 */}
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-100 sm:text-6xl">
