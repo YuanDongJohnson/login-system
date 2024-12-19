@@ -1,15 +1,14 @@
 import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation'; // 修改导入路径
 
 export default function ResetPassword({ searchParams }) {
-  const router = useRouter();
-  const supabase = createClient();
+  const router = useRouter(); // 使用新的 useRouter
 
   const {
     data: { session },
-  } = supabase.auth.getSession();
+  } = createClient().auth.getSession();
 
   // 如果用户已经登录，直接重定向到登录页面
   if (session) {
@@ -36,6 +35,7 @@ export default function ResetPassword({ searchParams }) {
       return router.push(`/reset-password?message=两次输入的密码不一致，请重新输入`);
     }
 
+    const supabase = createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(searchParams.code);
 
     if (error) {
