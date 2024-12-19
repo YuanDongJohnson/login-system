@@ -11,10 +11,24 @@ interface SearchParams {
 export default function ResetPassword({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
 
-  // 检查用户是否已登录，如果已登录则重定向到登录页面
-  const { data: sessionData, error: sessionError } = createClient().auth.getSession();
-  const session = sessionData?.data?.session || null;
+  // 定义异步函数来处理getSession，并正确处理返回值
+  const handleSession = async () => {
+    const response = await createClient().auth.getSession();
+    if (response.error) {
+      // 如果有错误，可以根据错误类型进行处理，这里先打印错误
+      console.error(response.error);
+      return null;
+    }
+    return response.data?.session || null;
+  };
 
+  // 调用异步函数并等待结果
+  const [session, setSession] = React.useState<Session | null>(null);
+  React.useEffect(() => {
+    handleSession().then(setSession);
+  }, []);
+
+  // 如果用户已经登录，直接重定向到登录页面
   if (session) {
     router.push('/login');
     return null;
@@ -38,8 +52,14 @@ export default function ResetPassword({ searchParams }: { searchParams: SearchPa
 
     const supabase = createClient();
     try {
-      const { session: newSession } = await supabase.auth.exchangeCodeForSession(searchParams.code);
-      await supabase.auth.updateUser({ password });
+      const { error } = await supabase.auth.exchangeCodeForSession(searchParams.code);
+      if (error) {
+        throw error; // 抛出错误以便下面的catch语句可以捕获
+      }
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError) {
+        throw updateError;
+      }
       router.push(`/login?message=你的密码已重置，请登录`);
     } catch (error) {
       console.error('重置密码失败:', error);
