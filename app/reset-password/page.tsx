@@ -8,10 +8,14 @@ interface SearchParams {
   code?: string;
 }
 
+// 定义Session类型和AuthError类型，根据实际的类型定义
+type Session = any; // 请替换为实际的Session类型
+type AuthError = any; // 请替换为实际的AuthError类型
+
 export default function ResetPassword({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
 
-  // 使用类型守卫来处理getSession的返回值
+  // 使用async/await来等待Promise解析完成
   const handleSession = async () => {
     const sessionOrError = await createClient().auth.getSession();
     if ('data' in sessionOrError && sessionOrError.data.session) {
@@ -24,12 +28,15 @@ export default function ResetPassword({ searchParams }: { searchParams: SearchPa
     return null;
   };
 
+  // 等待session解析完成
   const session = handleSession();
 
-  if (session) {
-    router.push('/login');
-    return null; // 防止后续代码执行
-  }
+  // 使用useEffect来处理session的检查和重定向
+  useEffect(() => {
+    if (session) {
+      router.push('/login');
+    }
+  }, [session, router]);
 
   if (!searchParams.code) {
     router.push('/login');
@@ -122,3 +129,14 @@ export default function ResetPassword({ searchParams }: { searchParams: SearchPa
     </div>
   );
 }
+
+// 使用useEffect钩子
+import { useEffect } from 'react';
+
+const useCheckSession = (session, router) => {
+  useEffect(() => {
+    if (session) {
+      router.push('/login');
+    }
+  }, [session, router]);
+};
