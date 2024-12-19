@@ -1,52 +1,45 @@
 import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/router';
 
-export default async function ResetPassword({
-  searchParams,
-}: {
-  searchParams: { message: string; code: string };
-}) {
+export default function ResetPassword({ searchParams }) {
+  const router = useRouter();
   const supabase = createClient();
 
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = supabase.auth.getSession();
 
   // 如果用户已经登录，直接重定向到登录页面
   if (session) {
-    return redirect('/login');
+    router.push('/login');
+    return null; // 防止后续代码执行
   }
 
   // 检查是否通过正确的方式访问重置密码页面
   // 直接输入网址的用户没有 searchParams.code，因此会被重定向到登录页面
   if (!searchParams.code) {
-    return redirect('/login');
+    router.push('/login');
+    return null; // 防止后续代码执行
   }
 
-  const resetPassword = async (formData: FormData) => {
-    'use server';
+  const resetPassword = async (event) => {
+    event.preventDefault(); // 阻止表单默认提交行为
 
-    const password = formData.get('password') as string;
-    const confirm_password = formData.get('confirmPassword') as string;
+    const formData = new FormData(event.target);
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirmPassword');
 
     // 确认密码是否匹配
-    if (password !== confirm_password) {
-      return redirect(
-        `/reset-password?message=两次输入的密码不一致，请重新输入`
-      );
+    if (password !== confirmPassword) {
+      return router.push(`/reset-password?message=两次输入的密码不一致，请重新输入`);
     }
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(
-      searchParams.code
-    );
+    const { error } = await supabase.auth.exchangeCodeForSession(searchParams.code);
 
     if (error) {
-      return redirect(
-        `/reset-password?message=链接过期,无法重置密码`
-      );
+      return router.push(`/reset-password?message=链接过期,无法重置密码`);
     }
 
     const { error: updateError } = await supabase.auth.updateUser({
@@ -55,14 +48,10 @@ export default async function ResetPassword({
 
     if (updateError) {
       console.log(updateError);
-      return redirect(
-        `/reset-password?message=无法重置密码,再试一次`
-      );
+      return router.push(`/reset-password?message=无法重置密码,再试一次`);
     }
 
-    redirect(
-      `/login?message=你的密码已重置,请登入`
-    );
+    router.push(`/login?message=你的密码已重置,请登入`);
   };
 
   return (
@@ -80,7 +69,7 @@ export default async function ResetPassword({
         {searchParams.code ? (
           <form
             className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-            action={resetPassword}
+            onSubmit={resetPassword} // 使用 onSubmit 处理表单提交
           >
             <label className="text-md" htmlFor="password">
               输入新密码
@@ -102,7 +91,7 @@ export default async function ResetPassword({
               placeholder="••••••••"
               required
             />
-            <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
+            <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2" type="submit">
               重置密码
             </button>
 
