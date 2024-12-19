@@ -1,70 +1,56 @@
 import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
-interface SearchParams {
-  message?: string;
-  code?: string;
-}
+export default async function ResetPassword({
+  searchParams,
+}: {
+  searchParams: { message: string; code: string };
+}) {
+  const supabase = createClient();
 
-export default function ResetPassword({ searchParams }: { searchParams: SearchParams }) {
-  const router = useRouter();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  // 定义异步函数来处理getSession，并正确处理返回值
-  const handleSession = async () => {
-    const response = await createClient().auth.getSession();
-    if (response.error) {
-      // 如果有错误，可以根据错误类型进行处理，这里先打印错误
-      console.error(response.error);
-      return null;
-    }
-    return response.data?.session || null;
-  };
-
-  // 调用异步函数并等待结果
-  const [session, setSession] = React.useState<Session | null>(null);
-  React.useEffect(() => {
-    handleSession().then(setSession);
-  }, []);
-
-  // 如果用户已经登录，直接重定向到登录页面
   if (session) {
-    router.push('/login');
-    return null;
+    return redirect('/login');
   }
 
-  if (!searchParams.code) {
-    router.push('/login');
-    return null;
-  }
+  const resetPassword = async (formData: FormData) => {
+    'use server';
 
-  const resetPassword = async (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const password = formData.get('password');
-    const confirmPassword = formData.get('confirmPassword');
-
-    if (password !== confirmPassword) {
-      return router.push(`/reset-password?message=两次输入的密码不一致，请重新输入`);
-    }
-
+    const password = formData.get('password') as string;
     const supabase = createClient();
-    try {
-      const { error } = await supabase.auth.exchangeCodeForSession(searchParams.code);
+
+    if (searchParams.code) {
+      const supabase = createClient();
+      const { error } = await supabase.auth.exchangeCodeForSession(
+        searchParams.code
+      );
+
       if (error) {
-        throw error; // 抛出错误以便下面的catch语句可以捕获
+        return redirect(
+          `/reset-password?message=无法重置密码,链接过期!`
+        );
       }
-      const { error: updateError } = await supabase.auth.updateUser({ password });
-      if (updateError) {
-        throw updateError;
-      }
-      router.push(`/login?message=你的密码已重置，请登录`);
-    } catch (error) {
-      console.error('重置密码失败:', error);
-      router.push(`/reset-password?message=重置密码失败，请再试一次`);
     }
+
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      console.log(error);
+      return redirect(
+        `/reset-password?message=无法重置密码,请重试!`
+      );
+    }
+
+    redirect(
+      `/login?message=你的密码已重置,请重新登入`
+    );
   };
 
   return (
@@ -79,42 +65,40 @@ export default function ResetPassword({ searchParams }: { searchParams: SearchPa
       </Link>
 
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
-        {searchParams.code && (
-          <form
-            className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-            onSubmit={resetPassword}
-          >
-            <label className="text-md" htmlFor="password">
-              输入新密码
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              required
-            />
-            <label className="text-md" htmlFor="password">
-              确认新密码
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
-              type="password"
-              name="confirmPassword"
-              placeholder="••••••••"
-              required
-            />
-            <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2" type="submit">
-              重置密码
-            </button>
+        <form
+          className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
+          action={resetPassword}
+        >
+          <label className="text-md" htmlFor="password">
+            设置新密码
+          </label>
+          <input
+            className="rounded-md px-4 py-2 bg-inherit border mb-6"
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            required
+          />
+          <label className="text-md" htmlFor="password">
+            确认新密码
+          </label>
+          <input
+            className="rounded-md px-4 py-2 bg-inherit border mb-6"
+            type="password"
+            name="confirmPassword"
+            placeholder="••••••••"
+            required
+          />
+          <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
+            重置密码
+          </button>
 
-            {searchParams?.message && (
-              <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-                {searchParams.message}
-              </p>
-            )}
-          </form>
-        )}
+          {searchParams?.message && (
+            <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+              {searchParams.message}
+            </p>
+          )}
+        </form>
       </div>
     </div>
   );
