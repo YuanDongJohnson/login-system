@@ -3,7 +3,6 @@ import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// 定义searchParams的类型
 interface SearchParams {
   message?: string;
   code?: string;
@@ -12,18 +11,26 @@ interface SearchParams {
 export default function ResetPassword({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
 
-  const {
-    data: { session },
-  } = createClient().auth.getSession();
+  // 使用类型守卫来处理getSession的返回值
+  const handleSession = async () => {
+    const sessionOrError = await createClient().auth.getSession();
+    if ('data' in sessionOrError && sessionOrError.data.session) {
+      return sessionOrError.data.session;
+    } else if ('error' in sessionOrError && sessionOrError.error) {
+      console.error(sessionOrError.error);
+      router.push(`/reset-password?message=登录发生错误`);
+      return null;
+    }
+    return null;
+  };
 
-  // 如果用户已经登录，直接重定向到登录页面
+  const session = handleSession();
+
   if (session) {
     router.push('/login');
     return null; // 防止后续代码执行
   }
 
-  // 检查是否通过正确的方式访问重置密码页面
-  // 直接输入网址的用户没有 searchParams.code，因此会被重定向到登录页面
   if (!searchParams.code) {
     router.push('/login');
     return null; // 防止后续代码执行
@@ -36,7 +43,6 @@ export default function ResetPassword({ searchParams }: { searchParams: SearchPa
     const password = formData.get('password');
     const confirmPassword = formData.get('confirmPassword');
 
-    // 确认密码是否匹配
     if (password !== confirmPassword) {
       return router.push(`/reset-password?message=两次输入的密码不一致，请重新输入`);
     }
