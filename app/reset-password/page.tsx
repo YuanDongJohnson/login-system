@@ -1,10 +1,16 @@
 import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // 修改导入路径
+import { useRouter } from 'next/navigation';
 
-export default function ResetPassword({ searchParams }) {
-  const router = useRouter(); // 使用新的 useRouter
+// 定义searchParams的类型
+interface SearchParams {
+  message?: string;
+  code?: string;
+}
+
+export default function ResetPassword({ searchParams }: { searchParams: SearchParams }) {
+  const router = useRouter();
 
   const {
     data: { session },
@@ -69,7 +75,7 @@ export default function ResetPassword({ searchParams }) {
         {searchParams.code ? (
           <form
             className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-            onSubmit={resetPassword} // 使用 onSubmit 处理表单提交
+            onSubmit={resetPassword}
           >
             <label className="text-md" htmlFor="password">
               输入新密码
