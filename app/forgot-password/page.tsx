@@ -31,11 +31,11 @@ export default async function ForgotPassword({
     });
 
     if (error) {
-      return redirect('/forgot-password?message=Could not authenticate user');
+      return redirect('/forgot-password?message=无法验证用户');
     }
 
     return redirect(
-      '/confirm?message=Password Reset link has been sent to your email address'
+      '/confirm?message=密码重置已经发至邮箱'
     );
   };
 
