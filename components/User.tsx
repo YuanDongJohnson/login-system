@@ -19,10 +19,10 @@ export default async function User() {
   return (
     session && (
       <div className="flex items-center gap-4">
-        Hey, {session.user.email}!
+        你好, {session.user.email}!
         <form action={signOut}>
           <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
-            Logout
+            登出
           </button>
         </form>
       </div>
