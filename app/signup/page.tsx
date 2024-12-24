@@ -29,7 +29,7 @@ export default async function Signup({
     const supabase = createClient();
 
     if (password !== confirmPassword) {
-      return redirect('/signup?message=Passwords do not match');
+      return redirect('/signup?message=密码不匹配');
     }
 
     const { error } = await supabase.auth.signUp({
@@ -41,11 +41,11 @@ export default async function Signup({
     });
 
     if (error) {
-      return redirect('/signup?message=Could not authenticate user');
+      return redirect('/signup?message=无法验证的用户');
     }
 
     return redirect(
-      `/confirm?message=Check email(${email}) to continue sign in process`
+      `/confirm?message=验证邮箱(${email}) 请继续登入`
     );
   };
 
@@ -57,7 +57,7 @@ export default async function Signup({
         href="/"
         className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4"
       >
-        Home
+        回首页
       </Link>
 
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
@@ -66,7 +66,7 @@ export default async function Signup({
           action={signUp}
         >
           <label className="text-md" htmlFor="email">
-            Email
+            输入电子邮箱
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -75,7 +75,7 @@ export default async function Signup({
             required
           />
           <label className="text-md" htmlFor="password">
-            Password
+            输入密码
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -85,7 +85,7 @@ export default async function Signup({
             required
           />
           <label className="text-md" htmlFor="password">
-            Confirm Password
+            确认密码
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -95,7 +95,7 @@ export default async function Signup({
             required
           />
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
-            Sign up
+            注册
           </button>
 
           {searchParams?.message && (
@@ -106,10 +106,10 @@ export default async function Signup({
         </form>
 
         <Link
-          href="/signup"
+          href="/login"
           className="rounded-md no-underline text-foreground text-sm"
         >
-          Already have an account? Sign In
+          已经有帐号？去登入
         </Link>
       </div>
     </div>
