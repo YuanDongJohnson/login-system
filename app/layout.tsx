@@ -2,7 +2,7 @@ import { GeistSans } from 'geist/font/sans';
 import './globals.css';
 
 export const metadata = {
-  title: 'Supabase Next Auth',
+  title: '欢迎来到老吴手工艺品展馆',
   description: '',
 };
 
