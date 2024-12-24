@@ -31,11 +31,11 @@ export default async function ForgotPassword({
     });
 
     if (error) {
-      return redirect('/forgot-password?message=无法验证的用户');
+      return redirect('/forgot-password?message=Could not authenticate user');
     }
 
     return redirect(
-      '/confirm?message=密码重置链接已发送至邮箱'
+      '/confirm?message=Password Reset link has been sent to your email address'
     );
   };
 
@@ -47,7 +47,7 @@ export default async function ForgotPassword({
         href="/"
         className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4"
       >
-        回首页
+        Home
       </Link>
 
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
@@ -56,7 +56,7 @@ export default async function ForgotPassword({
           action={confirmReset}
         >
           <label className="text-md" htmlFor="email">
-            请输入邮箱
+            Enter Email Address
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -66,7 +66,7 @@ export default async function ForgotPassword({
           />
 
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
-            确认
+            Confirm
           </button>
 
           {searchParams?.message && (
@@ -80,7 +80,7 @@ export default async function ForgotPassword({
           href="/login"
           className="rounded-md no-underline text-foreground text-sm"
         >
-          记得密码? 去登入
+          Remember your password? Sign in
         </Link>
       </div>
     </div>
