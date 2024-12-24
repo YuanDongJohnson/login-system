@@ -61,7 +61,7 @@ export default async function ResetPassword({
         href="/"
         className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4"
       >
-        Home
+        回首页
       </Link>
 
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
@@ -70,7 +70,7 @@ export default async function ResetPassword({
           action={resetPassword}
         >
           <label className="text-md" htmlFor="password">
-            New Password
+            输入新密码
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -80,7 +80,7 @@ export default async function ResetPassword({
             required
           />
           <label className="text-md" htmlFor="password">
-            Confirm New Password
+            确认新密码
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -90,7 +90,7 @@ export default async function ResetPassword({
             required
           />
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
-            Reset
+            重置
           </button>
 
           {searchParams?.message && (
