@@ -49,7 +49,7 @@ export default async function ResetPassword({
     }
 
     redirect(
-      `/login?message=Your Password has been reset successfully. Sign in.`
+      `/text?message=Your Password has been reset successfully. Sign in.`
     );
   };
 
