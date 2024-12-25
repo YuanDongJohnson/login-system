@@ -29,7 +29,7 @@ export default async function Signup({
     const supabase = createClient();
 
     if (password !== confirmPassword) {
-      return redirect('/signup?message=密码不匹配');
+      return redirect('/signup?message=Passwords do not match');
     }
 
     const { error } = await supabase.auth.signUp({
@@ -41,16 +41,16 @@ export default async function Signup({
     });
 
     if (error) {
-      return redirect('/signup?message=无法验证的用户');
+      return redirect('/signup?message=Could not authenticate user');
     }
 
     return redirect(
-      `/confirm?message=验证邮箱(${email}) 请继续登入`
+      `/confirm?message=Check email(${email}) to continue sign in process`
     );
   };
 
   return (
-    <div>
+      <div>
       <Header />
 
       <Link
