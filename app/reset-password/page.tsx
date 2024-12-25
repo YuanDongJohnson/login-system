@@ -32,7 +32,7 @@ export default async function ResetPassword({
 
       if (error) {
         return redirect(
-          `/reset-password?message=无法重置密码,链接已失效!`
+          `/reset-password?message=Unable to reset Password. Link expired!`
         );
       }
     }
@@ -44,12 +44,12 @@ export default async function ResetPassword({
     if (error) {
       console.log(error);
       return redirect(
-        `/reset-password?message=重置密码失败,请重试!`
+        `/reset-password?message=Unable to reset Password. Try again!`
       );
     }
 
     redirect(
-      `/text?message=密码已重置 请登入`
+      `/text?message=Your Password has been reset successfully. Sign in.`
     );
   };
 
