@@ -16,7 +16,7 @@ export default async function Signup({
   } = await supabase.auth.getSession();
 
   if (session) {
-    return redirect('/');
+    return redirect('/text');
   }
 
   const signUp = async (formData: FormData) => {
