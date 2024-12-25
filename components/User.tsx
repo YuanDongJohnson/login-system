@@ -23,37 +23,19 @@ export default async function User() {
 
   // 定义登出函数
 
-  const signOut = async (email, phone) => {
+  const signOut = async () => {
 
-    // 尝试使用邮箱登出
-
-    try {
-
-      await supabase.auth.api.signOut({ email });
-
-    } catch (error) {
-
-      // 如果邮箱登出失败，尝试使用手机号登出
-
-      try {
-
-        await supabase.auth.api.signOut({ phone });
-
-      } catch (error) {
-
-        // 如果两种登出方式都失败，抛出错误
-
-        throw new Error('登出失败，请稍后再试');
-
-      }
-
-    }
-
-    // 登出成功后重定向到登录页面
+    await supabase.auth.signOut();
 
     return redirect('/login');
 
   };
+
+
+
+  // 确定显示的用户名
+
+  let displayName = session?.user?.email || session?.user?.phone || '用户';
 
 
 
@@ -63,9 +45,21 @@ export default async function User() {
 
       <div className="flex items-center gap-4">
 
-        你好, {session.user.email}!
+        {session.user.email ? (
 
-        <form action={() => signOut(session.user.email, session.user.phone)}>
+          <p>你好, {session.user.email}!</p>
+
+        ) : session.user.phone ? (
+
+          <p>你好, {session.user.phone}!</p>
+
+        ) : (
+
+          <p>你好, {displayName}!</p>
+
+        )}
+
+        <form onSubmit={signOut}>
 
           <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
 
