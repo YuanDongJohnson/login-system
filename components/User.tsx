@@ -1,3 +1,4 @@
+'use client';
 
 import { createClient } from '@/utils/supabase/client'; // 使用客户端的 createClient
 
