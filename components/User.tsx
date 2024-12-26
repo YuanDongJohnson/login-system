@@ -1,26 +1,22 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
 
 export default function User() {
-  const [session, setSession] = useState(null)
+  const [session, setSession] = useState<any>(null)
   const supabase = createClient()
   const router = useRouter()
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
-    return () => subscription.unsubscribe()
+    const getSession = async () => {
+      const { data, error } = await supabase.auth.getSession()
+      if (data.session) {
+        setSession(data.session)
+      }
+    }
+    getSession()
   }, [])
 
   const signOut = async () => {
@@ -32,10 +28,12 @@ export default function User() {
     return null
   }
 
+  const userIdentifier = session.user.phone || (session.user.email && !session.user.email_change_confirm_status ? session.user.email : null)
+
   return (
     <div className="flex items-center gap-4">
-      你好, {session.user.phone || session.user.email}!
-      <button
+      你好, {userIdentifier}!
+      <button 
         onClick={signOut}
         className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
       >
