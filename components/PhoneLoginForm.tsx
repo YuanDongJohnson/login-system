@@ -1,39 +1,40 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export function PhoneLoginForm() {
-  const [phone, setPhone] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const supabase = createClient();
-  const router = useRouter();
+  const [phone, setPhone] = useState('')
+  const [verificationCode, setVerificationCode] = useState('')
+  const supabase = createClient()
+  const router = useRouter()
 
   const getQRcode = async () => {
     let { data, error } = await supabase.auth.signInWithOtp({
       phone: phone,
-    });
+    })
     if (error) {
-      alert(error.message);
+      alert(error.message)
     } else {
-      alert('短信已发送至您的手机中，请注意查收。');
+      alert('短信已发送至您的手机中，请注意查收。')
     }
-  };
+  }
 
   const signIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     let { data, error } = await supabase.auth.verifyOtp({
       phone: phone,
       token: verificationCode,
       type: 'sms',
-    });
+    })
     if (error) {
-      alert(error.message);
+      alert(error.message)
     } else {
-      router.push('/text');
+      router.push('/text')
     }
-  };
+  }
 
   return (
     <form onSubmit={signIn} className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
@@ -63,7 +64,10 @@ export function PhoneLoginForm() {
       <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
         登录/注册
       </button>
+      <Link href="/reset-password" className="text-sm text-center text-indigo-700 hover:underline">
+        忘记密码？
+      </Link>
     </form>
-  );
+  )
 }
 
