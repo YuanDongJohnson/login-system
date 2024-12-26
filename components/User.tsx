@@ -1,45 +1,35 @@
-'use client'
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
+export default async function User() {
+  const supabase = createClient();
 
-export default function User() {
-  const [session, setSession] = useState<any>(null)
-  const supabase = createClient()
-  const router = useRouter()
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { data, error } = await supabase.auth.getSession()
-      if (data.session) {
-        setSession(data.session)
-      }
-    }
-    getSession()
-  }, [])
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
-  }
+    'use server';
 
-  if (!session) {
-    return null
-  }
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    return redirect('/login');
+  };
 
-  const userIdentifier = session.user.phone || (session.user.email && !session.user.email_change_confirm_status ? session.user.email : null)
+  // 获取用户标识符（手机号或邮箱）
+  const userIdentifier = session?.user.phone || session?.user.email;
 
   return (
-    <div className="flex items-center gap-4">
-      你好, {userIdentifier}!
-      <button 
-        onClick={signOut}
-        className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
-      >
-        登出
-      </button>
-    </div>
-  )
+    session && (
+      <div className="flex items-center gap-4">
+        你好, {userIdentifier}!
+        <form action={signOut}>
+          <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
+            登出
+          </button>
+        </form>
+      </div>
+    )
+  );
 }
 
