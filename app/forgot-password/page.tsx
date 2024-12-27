@@ -1,42 +1,29 @@
-import Link from 'next/link';
-import { headers } from 'next/headers';
-import { createClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
-import Header from '@/components/Header/Header';
 
-export default async function ForgotPassword({
+import Header from '@/components/Header/Header';
+import { createClient } from '@/utils/supabase/server';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+
+export default function ForgotPassword({
   searchParams,
 }: {
   searchParams: { message: string };
 }) {
-  const supabase = createClient();
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (session) {
-    return redirect('/');
-  }
-
-  const confirmReset = async (formData: FormData) => {
+  const forgotPassword = async (formData: FormData) => {
     'use server';
 
-    const origin = headers().get('origin');
     const email = formData.get('email') as string;
     const supabase = createClient();
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/reset-password`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
     });
 
     if (error) {
-      return redirect('/forgot-password?message=Could not authenticate user');
+      return redirect('/forgot-password?message=' + encodeURIComponent('无法发送重置密码邮件，请稍后再试。'));
     }
 
-    return redirect(
-      '/confirm?message=Password Reset link has been sent to your email address'
-    );
+    return redirect('/forgot-password?message=' + encodeURIComponent('重置密码邮件已发送，请查看您的邮箱。'));
   };
 
   return (
@@ -53,10 +40,10 @@ export default async function ForgotPassword({
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-          action={confirmReset}
+          action={forgotPassword}
         >
           <label className="text-md" htmlFor="email">
-            输入电子邮箱
+            输入您的电子邮箱
           </label>
           <input
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -64,14 +51,13 @@ export default async function ForgotPassword({
             placeholder="you@example.com"
             required
           />
-
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
-            确认
+            发送重置密码邮件
           </button>
 
           {searchParams?.message && (
             <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-              {searchParams.message}
+              {decodeURIComponent(searchParams.message)}
             </p>
           )}
         </form>
@@ -80,9 +66,12 @@ export default async function ForgotPassword({
           href="/login"
           className="rounded-md no-underline text-foreground text-sm"
         >
-          记得密码? 去登入
+          返回登录
         </Link>
       </div>
     </div>
   );
 }
+
+
+
