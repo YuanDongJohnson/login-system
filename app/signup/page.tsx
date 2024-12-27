@@ -29,7 +29,7 @@ export default async function Signup({
     const supabase = createClient();
 
     if (password !== confirmPassword) {
-      return redirect('/signup?message=Passwords do not match');
+      return redirect('/signup?message=' + encodeURIComponent('密码不匹配'));
     }
 
     const { error } = await supabase.auth.signUp({
@@ -41,16 +41,16 @@ export default async function Signup({
     });
 
     if (error) {
-      return redirect('/signup?message=Could not authenticate user');
+      return redirect('/signup?message=' + encodeURIComponent('无法注册用户'));
     }
 
     return redirect(
-      `/confirm?message=Check email(${email}) to continue sign in process`
+      '/confirm?message=' + encodeURIComponent(`请查看邮箱 (${email}) 以完成注册流程`)
     );
   };
 
   return (
-      <div>
+    <div>
       <Header />
 
       <Link
@@ -84,7 +84,7 @@ export default async function Signup({
             placeholder="••••••••"
             required
           />
-          <label className="text-md" htmlFor="password">
+          <label className="text-md" htmlFor="confirmPassword">
             确认密码
           </label>
           <input
@@ -100,7 +100,7 @@ export default async function Signup({
 
           {searchParams?.message && (
             <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-              {searchParams.message}
+              {decodeURIComponent(searchParams.message)}
             </p>
           )}
         </form>
@@ -109,9 +109,10 @@ export default async function Signup({
           href="/login"
           className="rounded-md no-underline text-foreground text-sm"
         >
-          已经有帐号？去登入
+          已经有帐号？去登录
         </Link>
       </div>
     </div>
   );
 }
+
