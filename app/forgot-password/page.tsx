@@ -19,10 +19,6 @@ export default function ForgotPassword({
       redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
     });
 
-    if (session) {
-    return redirect('/text');
-  }
-
     if (error) {
       return redirect('/forgot-password?message=' + encodeURIComponent('无法发送重置密码邮件，请稍后再试。'));
     }
