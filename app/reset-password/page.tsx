@@ -2,7 +2,6 @@ import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { decodeURIComponent } from 'querystring';
 
 export default async function ResetPassword({
   searchParams,
@@ -37,7 +36,7 @@ export default async function ResetPassword({
 
       if (error) {
         return redirect(
-          `/reset-password?message=${encodeURIComponent('无法重置密码。链接已过期！')}`
+          '/reset-password?message=' + encodeURIComponent('无法重置密码。链接已过期！')
         );
       }
     }
@@ -49,12 +48,12 @@ export default async function ResetPassword({
     if (error) {
       console.log(error);
       return redirect(
-        `/reset-password?message=${encodeURIComponent('无法重置密码。请重试！')}`
+        '/reset-password?message=' + encodeURIComponent('无法重置密码。请重试！')
       );
     }
 
     return redirect(
-      `/text?message=${encodeURIComponent('您的密码已成功重置。请登录。')}`
+      '/text?message=' + encodeURIComponent('您的密码已成功重置。请登录。')
     );
   };
 
