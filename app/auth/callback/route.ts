@@ -11,8 +11,6 @@ export async function GET(request: Request) {
 
   // by the SSR package. It exchanges an auth code for the user's session.
 
-  // https://supabase.com/docs/guides/auth/server-side/nextjs
-
   const requestUrl = new URL(request.url);
 
   const code = requestUrl.searchParams.get("code");
@@ -23,15 +21,17 @@ export async function GET(request: Request) {
 
     const supabase = createClient();
 
+    // Exchange the auth code for a session
+
     await supabase.auth.exchangeCodeForSession(code);
 
   }
 
 
 
-  // URL to redirect to after sign in process completes
+  // After the sign in process completes, redirect to /text
 
-  // 修改重定向路径为 /text
+  // We assume that if we have a code, the authentication was successful
 
   return NextResponse.redirect(`${requestUrl.origin}/text`);
 
