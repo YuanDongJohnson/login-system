@@ -23,6 +23,8 @@ export default async function ResetPassword({
 
 
 
+  // 检查用户是否已经登录
+
   const {
 
     data: { session },
@@ -31,7 +33,9 @@ export default async function ResetPassword({
 
 
 
-  if (session) {
+  // 如果用户未登录，重定向到登录页面
+
+  if (!session) {
 
     return redirect('/login');
 
@@ -39,38 +43,17 @@ export default async function ResetPassword({
 
 
 
-  // 检查令牌是否有效
+  const resetPassword = async (formData: FormData) => {
 
-  if (searchParams.code) {
-
-    const { error } = await supabase.auth.exchangeCodeForSession(searchParams.code);
+    'use server';
 
 
-
-    if (error) {
-
-      // 如果令牌无效或过期，重定向到登录页面，并编码中文字符
-
-      return redirect(`/login?message=
-{encodeURIComponent('无法重置密码。链接已过期或无效！')}`);
-
-    }
-
-  }
-
-
-
-  const resetPassword = async (event: React.FormEvent) => {
-
-    event.preventDefault(); // 阻止表单默认提交行为
-
-
-
-    const formData = new FormData(event.currentTarget);
 
     const password = formData.get('password') as string;
 
     const confirmPassword = formData.get('confirmPassword') as string;
+
+    const supabase = createClient();
 
 
 
@@ -80,6 +63,25 @@ export default async function ResetPassword({
 
       return redirect(`/reset-password?message=
 {encodeURIComponent('密码不匹配')}`);
+
+    }
+
+
+
+    if (searchParams.code) {
+
+      const { error } = await supabase.auth.exchangeCodeForSession(searchParams.code);
+
+
+
+      if (error) {
+
+        // 如果令牌无效或过期，重定向到登录页面，并编码中文字符
+
+        return redirect(`/reset-password?message=
+{encodeURIComponent('无法重置密码。链接已过期或无效！')}`);
+
+      }
 
     }
 
@@ -143,7 +145,7 @@ export default async function ResetPassword({
 
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
 
-          onSubmit={resetPassword} // 使用onSubmit事件处理表单提交
+          action={resetPassword}
 
         >
 
