@@ -43,17 +43,17 @@ export default async function ResetPassword({
 
 
 
-  const resetPassword = async (formData: FormData) => {
+  const resetPassword = async (event: React.FormEvent) => {
 
-    'use server';
+    event.preventDefault(); // 阻止表单默认提交行为
 
 
+
+    const formData = new FormData(event.currentTarget);
 
     const password = formData.get('password') as string;
 
     const confirmPassword = formData.get('confirmPassword') as string;
-
-    const supabase = createClient();
 
 
 
@@ -145,7 +145,7 @@ export default async function ResetPassword({
 
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
 
-          action={resetPassword}
+          onSubmit={resetPassword} // 使用onSubmit事件处理表单提交
 
         >
 
