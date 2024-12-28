@@ -2,6 +2,8 @@ import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import dynamic from 'next/dynamic';
+const Toast = dynamic(() => import('@/components/Toast'), { ssr: false });
 
 export default async function ResetPassword({
   searchParams,
@@ -96,14 +98,12 @@ export default async function ResetPassword({
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
             重置
           </button>
-
           {searchParams?.message && (
-            <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-              {decodeURIComponent(searchParams.message)}
-            </p>
+            <Toast message={decodeURIComponent(searchParams.message)} />
           )}
         </form>
       </div>
     </div>
   );
 }
+
