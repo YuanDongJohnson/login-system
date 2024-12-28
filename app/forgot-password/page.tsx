@@ -1,8 +1,8 @@
-
 import Header from '@/components/Header/Header';
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import Toast from '@/components/Toast';
 
 export default function ForgotPassword({
   searchParams,
@@ -54,12 +54,6 @@ export default function ForgotPassword({
           <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
             发送重置密码邮件
           </button>
-
-          {searchParams?.message && (
-            <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-              {decodeURIComponent(searchParams.message)}
-            </p>
-          )}
         </form>
 
         <Link
@@ -69,8 +63,11 @@ export default function ForgotPassword({
           返回登录
         </Link>
       </div>
+
+      {searchParams?.message && (
+        <Toast message={decodeURIComponent(searchParams.message)} />
+      )}
     </div>
   );
 }
-
 
