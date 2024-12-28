@@ -1,34 +1,29 @@
+'use client'
+
+import { useState } from 'react';
 import Header from '@/components/Header/Header';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 const Toast = dynamic(() => import('@/components/Toast'), { ssr: false });
 
-export default async function ResetPassword({
+export default function ResetPassword({
   searchParams,
 }: {
   searchParams: { message: string; code: string };
 }) {
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const supabase = createClient();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (session) {
-    return redirect('/text');
-  }
-
   const resetPassword = async (formData: FormData) => {
-    'use server';
-
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
-    const supabase = createClient();
 
     if (password !== confirmPassword) {
-      return redirect('/reset-password?message=' + encodeURIComponent('密码不匹配'));
+      setError('密码不匹配');
+      return;
     }
 
     if (searchParams.code) {
@@ -37,9 +32,8 @@ export default async function ResetPassword({
       );
 
       if (error) {
-        return redirect(
-          '/reset-password?message=' + encodeURIComponent('无法重置密码。链接已过期！')
-        );
+        setError('无法重置密码。链接已过期！');
+        return;
       }
     }
 
@@ -49,14 +43,11 @@ export default async function ResetPassword({
 
     if (error) {
       console.log(error);
-      return redirect(
-        '/reset-password?message=' + encodeURIComponent('无法重置密码。请重试！')
-      );
+      setError('无法重置密码。请重试！');
+      return;
     }
 
-    return redirect(
-      '/text?message=' + encodeURIComponent('您的密码已成功重置。请登录。')
-    );
+    router.push('/text?message=' + encodeURIComponent('您的密码已成功重置。请登录。'));
   };
 
   return (
@@ -73,7 +64,10 @@ export default async function ResetPassword({
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-          action={resetPassword}
+          onSubmit={(e) => {
+            e.preventDefault();
+            resetPassword(new FormData(e.currentTarget));
+          }}
         >
           <label className="text-md" htmlFor="password">
             输入新密码
@@ -95,11 +89,11 @@ export default async function ResetPassword({
             placeholder="••••••••"
             required
           />
-          <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
+          <button type="submit" className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
             重置
           </button>
-          {searchParams?.message && (
-            <Toast message={decodeURIComponent(searchParams.message)} />
+          {(error || searchParams?.message) && (
+            <Toast message={error || decodeURIComponent(searchParams.message)} />
           )}
         </form>
       </div>
