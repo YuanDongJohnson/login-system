@@ -1,51 +1,43 @@
+'use client'
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header/Header';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import Toast from '@/components/Toast';
 
-export default async function Signup({
-  searchParams,
-}: {
-  searchParams: { message: string };
-}) {
+export default function Signup() {
+  const [message, setMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const router = useRouter();
   const supabase = createClient();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (session) {
-    return redirect('/text');
-  }
-
   const signUp = async (formData: FormData) => {
-    'use server';
-
-    const origin = headers().get('origin');
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
-    const supabase = createClient();
 
     if (password !== confirmPassword) {
-      return redirect('/signup?message=' + encodeURIComponent('密码不匹配'));
+      setMessage('密码不匹配');
+      setShowToast(true);
+      return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
     if (error) {
-      return redirect('/signup?message=' + encodeURIComponent('无法注册用户'));
+      setMessage('无法注册用户');
+      setShowToast(true);
+    } else if (data) {
+      router.push('/confirm');
     }
-
-    return redirect('/signup?message=' + encodeURIComponent(`请查看邮箱 (${email}) 以完成注册流程`));
   };
 
   return (
@@ -62,7 +54,10 @@ export default async function Signup({
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-          action={signUp}
+          onSubmit={(e) => {
+            e.preventDefault();
+            signUp(new FormData(e.currentTarget));
+          }}
         >
           <label className="text-md" htmlFor="email">
             输入电子邮箱
@@ -106,8 +101,11 @@ export default async function Signup({
         </Link>
       </div>
 
-      {searchParams?.message && (
-        <Toast message={decodeURIComponent(searchParams.message)} />
+      {showToast && (
+        <Toast 
+          message={message} 
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );
