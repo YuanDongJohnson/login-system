@@ -1,45 +1,51 @@
-'use client'
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Header from '@/components/Header/Header';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import Toast from '@/components/Toast';
 
-export default function Signup() {
-  const [message, setMessage] = useState('');
-  const [showToast, setShowToast] = useState(false);
-  const router = useRouter();
+export default async function Signup({
+  searchParams,
+}: {
+  searchParams: { message: string };
+}) {
   const supabase = createClient();
 
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session) {
+    return redirect('/text');
+  }
+
   const signUp = async (formData: FormData) => {
+    'use server';
+
+    const origin = headers().get('origin');
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
+    const supabase = createClient();
 
     if (password !== confirmPassword) {
-      setMessage('密码不匹配');
-      setShowToast(true);
-      return;
+      return redirect('/signup?message=' + encodeURIComponent('密码不匹配'));
     }
 
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${origin}/auth/callback`,
       },
     });
 
     if (error) {
-      setMessage('无法注册用户');
-      setShowToast(true);
-    } else {
-      setMessage(`请查看邮箱 (${email}) 以完成注册流程`);
-      setShowToast(true);
-      setTimeout(() => router.push('/confirm'), 4300); // Redirect after toast disappears
+      return redirect('/signup?message=' + encodeURIComponent('无法注册用户'));
     }
+
+    return redirect('/signup?message=' + encodeURIComponent(`请查看邮箱 (${email}) 以完成注册流程`));
   };
 
   return (
@@ -56,10 +62,7 @@ export default function Signup() {
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            signUp(new FormData(e.currentTarget));
-          }}
+          action={signUp}
         >
           <label className="text-md" htmlFor="email">
             输入电子邮箱
@@ -103,11 +106,8 @@ export default function Signup() {
         </Link>
       </div>
 
-      {showToast && (
-        <Toast 
-          message={message} 
-          onClose={() => setShowToast(false)}
-        />
+      {searchParams?.message && (
+        <Toast message={decodeURIComponent(searchParams.message)} />
       )}
     </div>
   );
