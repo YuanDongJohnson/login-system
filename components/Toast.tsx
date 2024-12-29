@@ -4,36 +4,31 @@ import { useEffect, useState } from 'react'
 
 interface ToastProps {
   message: string
-  delay?: number
-  duration?: number
+  onClose: () => void
 }
 
-export default function Toast({ message, delay = 1000, duration = 3000 }: ToastProps) {
-  const [isVisible, setIsVisible] = useState(false)
+export default function Toast({ message, onClose }: ToastProps) {
   const [opacity, setOpacity] = useState(0)
 
   useEffect(() => {
     const showTimer = setTimeout(() => {
-      setIsVisible(true)
       setOpacity(1)
-    }, delay)
+    }, 1000)
 
     const hideTimer = setTimeout(() => {
       setOpacity(0)
-    }, delay + duration)
+    }, 4000)
 
-    const removeTimer = setTimeout(() => {
-      setIsVisible(false)
-    }, delay + duration + 300) // 300ms for fade out animation
+    const closeTimer = setTimeout(() => {
+      onClose()
+    }, 4300)
 
     return () => {
       clearTimeout(showTimer)
       clearTimeout(hideTimer)
-      clearTimeout(removeTimer)
+      clearTimeout(closeTimer)
     }
-  }, [delay, duration])
-
-  if (!isVisible) return null
+  }, [onClose])
 
   return (
     <div 
