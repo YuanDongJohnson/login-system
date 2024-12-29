@@ -28,7 +28,7 @@ export default function Toast({ message, onClose }: ToastProps) {
       clearTimeout(hideTimer)
       clearTimeout(closeTimer)
     }
-  }, [onClose])
+  }, [message, onClose])
 
   return (
     <div 
