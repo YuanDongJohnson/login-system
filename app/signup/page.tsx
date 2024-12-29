@@ -1,10 +1,9 @@
-'use client'
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
 import Header from '@/components/Header/Header';
-import { useState } from 'react';
 import Toast from '@/components/Toast';
 
 export default function Signup() {
@@ -103,7 +102,12 @@ export default function Signup() {
         </Link>
       </div>
 
-      {showToast && <Toast message={message} />}
+      {showToast && (
+        <Toast 
+          message={message} 
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 }
