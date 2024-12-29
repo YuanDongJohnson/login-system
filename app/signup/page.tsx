@@ -36,7 +36,8 @@ export default function Signup() {
       setMessage('无法注册用户');
       setShowToast(true);
     } else if (data) {
-      router.push('/confirm');
+      const confirmMessage = encodeURIComponent(`请查看邮箱 (${email}) 以完成注册流程`);
+      router.push(`/confirm?message=${confirmMessage}`);
     }
   };
 
