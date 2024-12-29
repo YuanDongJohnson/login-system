@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 
 interface ToastProps {
   message: string
-  onClose: () => void
 }
 
-export default function Toast({ message, onClose }: ToastProps) {
+export default function Toast({ message }: ToastProps) {
   const [opacity, setOpacity] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
     const showTimer = setTimeout(() => {
@@ -19,16 +19,18 @@ export default function Toast({ message, onClose }: ToastProps) {
       setOpacity(0)
     }, 4000)
 
-    const closeTimer = setTimeout(() => {
-      onClose()
+    const removeTimer = setTimeout(() => {
+      setIsVisible(false)
     }, 4300)
 
     return () => {
       clearTimeout(showTimer)
       clearTimeout(hideTimer)
-      clearTimeout(closeTimer)
+      clearTimeout(removeTimer)
     }
-  }, [onClose])
+  }, [])
+
+  if (!isVisible) return null
 
   return (
     <div 
