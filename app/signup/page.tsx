@@ -5,6 +5,8 @@ import { createClient } from '@/utils/supabase/server';
 
 import Link from 'next/link';
 
+import { redirect } from 'next/navigation';
+
 import { headers } from 'next/headers';
 
 import Toast from '@/components/Toast';
@@ -35,17 +37,9 @@ export default async function Signup({
 
   if (session) {
 
-    // 如果用户已登录，则重定向到主页
-
     return redirect('/text');
 
   }
-
-
-
-  // 定义一个状态来存储提示消息
-
-  const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
 
 
@@ -63,7 +57,9 @@ export default async function Signup({
 
     if (password !== confirmPassword) {
 
-      setToastMessage('密码不匹配');
+      // 密码不匹配，设置错误消息并退出函数
+
+      searchParams.message = '密码不匹配';
 
       return;
 
@@ -79,7 +75,9 @@ export default async function Signup({
 
     if (data && data.total > 0) {
 
-      setToastMessage('此帐号已注册');
+      // 用户已存在，设置错误消息并退出函数
+
+      searchParams.message = '此帐号已注册';
 
       return;
 
@@ -89,7 +87,9 @@ export default async function Signup({
 
     if (error) {
 
-      setToastMessage('检查用户时发生错误');
+      // 查询出错，设置错误消息并退出函数
+
+      searchParams.message = '检查用户时发生错误';
 
       return;
 
@@ -97,37 +97,47 @@ export default async function Signup({
 
 
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    try {
 
-      email,
+      const { error: signUpError } = await supabase.auth.signUp({
 
-      password,
+        email,
 
-      options: {
+        password,
 
-        emailRedirectTo: `
+        options: {
+
+          emailRedirectTo: `
 {origin}/auth/callback`,
 
-      },
+        },
 
-    });
+      });
 
 
 
-    if (signUpError) {
+      if (signUpError) {
 
-      setToastMessage('无法注册用户');
+        // 注册失败，设置错误消息
 
-      return;
+        searchParams.message = '无法注册用户';
+
+      } else {
+
+        // 注册成功，设置成功消息
+
+        searchParams.message = `请查看邮箱 (
+{email}) 以完成注册流程`;
+
+      }
+
+    } catch (error) {
+
+      // 捕获任何异常并设置错误消息
+
+      searchParams.message = '注册过程中发生未知错误';
 
     }
-
-
-
-    // 注册成功后，设置提示消息
-
-    setToastMessage(`请查看邮箱 (
-{email}) 以完成注册流程`);
 
   };
 
@@ -161,13 +171,7 @@ export default async function Signup({
 
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
 
-          onSubmit={(event) => {
-
-            event.preventDefault();
-
-            signUp(new FormData(event.currentTarget));
-
-          }}
+          action={signUp}
 
         >
 
@@ -255,11 +259,9 @@ export default async function Signup({
 
 
 
-      {/* 根据 toastMessage 的值显示 Toast 组件 */}
+      {searchParams?.message && (
 
-      {toastMessage && (
-
-        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+        <Toast message={decodeURIComponent(searchParams.message)} />
 
       )}
 
