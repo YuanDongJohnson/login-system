@@ -1,9 +1,10 @@
+'use client'
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { createClient } from '@/utils/supabase/client';
 import Header from '@/components/Header/Header';
+import { createClient } from '@/utils/supabase/client';
+import Link from 'next/link';
 import Toast from '@/components/Toast';
 
 export default function Signup() {
