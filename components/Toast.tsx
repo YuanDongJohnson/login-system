@@ -1,68 +1,41 @@
-
 'use client'
 
-
-
-import { useEffect, useState } from 'react';
-
-
+import { useEffect, useState } from 'react'
 
 interface ToastProps {
-
-  message: string;
-
-  onClose: () => void;
-
-  isVisible: boolean; // 控制显示的 prop
-
+  message: string
 }
 
-
-
-export default function Toast({ message, onClose, isVisible }: ToastProps) {
-
-  const [opacity, setOpacity] = useState(0);
-
-
+export default function Toast({ message }: ToastProps) {
+  const [isVisible, setIsVisible] = useState(true)
+  const [opacity, setOpacity] = useState(1)
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setOpacity(0)
+    }, 3000)
 
-    if (isVisible) {
+    const hideTimer = setTimeout(() => {
+      setIsVisible(false)
+    }, 3300)
 
-      setOpacity(1);
-
-      const hideTimer = setTimeout(() => {
-
-        setOpacity(0);
-
-        onClose();
-
-      }, 3000); // 3秒后隐藏
-
-
-
-      return () => clearTimeout(hideTimer);
-
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(hideTimer)
     }
+  }, [])
 
-  }, [isVisible, onClose]);
-
-
+  if (!isVisible) return null
 
   return (
-
-    <div
-
-      className="fixed top-4 left-1/2 transform -translate-x-1/2 mt-4 p-4 bg-foreground/10 text-foreground text-center rounded-md"
-
-      style={{ transition: 'opacity 300ms ease-in-out', opacity }}
-
+    <div 
+      className="mt-4 p-4 bg-foreground/10 text-foreground text-center rounded-md"
+      style={{
+        transition: 'opacity 300ms ease-in-out',
+        opacity: opacity
+      }}
     >
-
       {message}
-
     </div>
-
-  );
-
+  )
 }
