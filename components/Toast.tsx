@@ -13,7 +13,7 @@ export default function Toast({ message }: ToastProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setOpacity(0)
-    }, 5000)
+    }, 3000)
 
     const hideTimer = setTimeout(() => {
       setIsVisible(false)
