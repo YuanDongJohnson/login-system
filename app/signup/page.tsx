@@ -5,23 +5,21 @@ import { createClient } from '@/utils/supabase/server';
 
 import Link from 'next/link';
 
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/router';
 
-import { headers } from 'next/headers';
+import { useState } from 'react';
 
 import Toast from '@/components/Toast';
 
 
 
-export default async function Signup({
+export default function Signup({ searchParams }) {
 
-  searchParams,
+  const router = useRouter();
 
-}: {
+  const [errorMessage, setErrorMessage] = useState('');
 
-  searchParams: { message: string };
 
-}) {
 
   const supabase = createClient();
 
@@ -31,13 +29,15 @@ export default async function Signup({
 
     data: { session },
 
-  } = await supabase.auth.getSession();
+  } = supabase.auth.getSession();
 
 
 
   if (session) {
 
-    return redirect('/text');
+    router.push('/text');
+
+    return null; // 确保在认证后不渲染任何内容
 
   }
 
@@ -51,57 +51,47 @@ export default async function Signup({
 
     const formData = new FormData(event.target);
 
-    const origin = headers().get('origin');
+    const email = formData.get('email');
 
-    const email = formData.get('email') as string;
+    const password = formData.get('password');
 
-    const password = formData.get('password') as string;
-
-    const confirmPassword = formData.get('confirmPassword') as string;
+    const confirmPassword = formData.get('confirmPassword');
 
 
 
     if (password !== confirmPassword) {
 
-      return Toast.show('密码不匹配', 'error');
+      setErrorMessage('密码不匹配');
+
+      return;
 
     }
 
 
 
-    try {
+    const { error } = await supabase.auth.signUp({
 
-      const { error } = await supabase.auth.signUp({
+      email,
 
-        email,
+      password,
 
-        password,
+      options: {
 
-        options: {
+        emailRedirectTo: window.location.origin + '/auth/callback',
 
-          emailRedirectTo: `
-{origin}/auth/callback`,
+      },
 
-        },
-
-      });
+    });
 
 
 
-      if (error) {
+    if (error) {
 
-        return Toast.show('无法注册用户', 'error');
+      setErrorMessage('无法注册用户');
 
-      }
+    } else {
 
-
-
-      Toast.show(`请查看邮箱 (
-{email}) 以完成注册流程`, 'success');
-
-    } catch (error) {
-
-      Toast.show('注册过程中发生错误', 'error');
+      setErrorMessage(`请查看邮箱 (${email}) 以完成注册流程`);
 
     }
 
@@ -115,21 +105,11 @@ export default async function Signup({
 
       <Header />
 
-
-
-      <Link
-
-        href="/"
-
-        className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4"
-
-      >
+      <Link href="/" className="py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover text-sm m-4">
 
         回首页
 
       </Link>
-
-
 
       <div className="w-full px-8 sm:max-w-md mx-auto mt-4">
 
@@ -207,15 +187,7 @@ export default async function Signup({
 
         </form>
 
-
-
-        <Link
-
-          href="/login"
-
-          className="rounded-md no-underline text-foreground text-sm"
-
-        >
+        <Link href="/login" className="rounded-md no-underline text-foreground text-sm">
 
           已经有帐号？去登录
 
@@ -223,13 +195,7 @@ export default async function Signup({
 
       </div>
 
-
-
-      {searchParams?.message && (
-
-        <Toast message={decodeURIComponent(searchParams.message)} />
-
-      )}
+      {errorMessage && <Toast message={errorMessage} />}
 
     </div>
 
