@@ -1,4 +1,8 @@
 
+'use client';
+
+
+
 import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
@@ -21,9 +25,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const [passwordMismatch, setPasswordMismatch] = useState<boolean>(false);
-
-
+  const [passwordMismatch, setPasswordMismatch] = useState<boolean>(false); // 新增状态来控制密码不匹配的提示
 
   const router = useRouter();
 
@@ -37,7 +39,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
     const formData = new FormData(event.currentTarget);
 
-
+    
 
     const password = formData.get('password') as string;
 
@@ -47,9 +49,9 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
     if (password !== confirmPassword) {
 
-      setToastMessage('密码不匹配，请重新输入');
+      setPasswordMismatch(true); // 设置密码不匹配的状态为真
 
-      setPasswordMismatch(true); // 控制密码不匹配的提示
+      setToastMessage('密码不匹配，请重新输入');
 
       return;
 
@@ -163,19 +165,13 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
         {passwordMismatch && (
 
-          // 使用 'use client' 确保只在客户端渲染
+          <div className="text-red-500 text-sm mb-2">
 
-          <>{' '}
+            密码不匹配，请重新输入
 
-            <p className="text-red-500 text-sm mb-2">
+          </div>
 
-              密码不匹配，请重新输入
-
-            </p>
-
-          </>
-
-        )} 
+        )} {/* 显示密码不匹配的错误提示 */}
 
         <button type="submit" className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
 
