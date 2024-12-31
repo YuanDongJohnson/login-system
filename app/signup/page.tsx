@@ -24,6 +24,17 @@ export default async function Signup() {
     const password = formData.get('password') as string;
     const supabase = createClient();
 
+    // 检查邮箱是否已注册
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      return { error: '该电子邮箱已被注册' };
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
