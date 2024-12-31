@@ -25,8 +25,6 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const [passwordMismatch, setPasswordMismatch] = useState<boolean>(false); // 新增状态来控制密码不匹配的提示
-
   const router = useRouter();
 
 
@@ -34,8 +32,6 @@ export function SignupForm({ signUp }: SignupFormProps) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
     event.preventDefault();
-
-    setToastMessage(null);
 
     const formData = new FormData(event.currentTarget);
 
@@ -49,17 +45,11 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
     if (password !== confirmPassword) {
 
-      setPasswordMismatch(true); // 设置密码不匹配的状态为真
-
-      setToastMessage('密码不匹配，请重新输入');
+      setToastMessage('密码不匹配，请重新输入'); // 使用 Toast 显示错误信息
 
       return;
 
     }
-
-
-
-    setPasswordMismatch(false); // 重置密码不匹配的状态
 
 
 
@@ -162,16 +152,6 @@ export function SignupForm({ signUp }: SignupFormProps) {
           required
 
         />
-
-        {passwordMismatch && (
-
-          <div className="text-red-500 text-sm mb-2">
-
-            密码不匹配，请重新输入
-
-          </div>
-
-        )} {/* 显示密码不匹配的错误提示 */}
 
         <button type="submit" className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
 
