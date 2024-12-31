@@ -53,6 +53,12 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
 
 
+    // 清除错误信息以便下次提交时可以显示新的错误信息
+
+    setToastMessage(null);
+
+
+
     try {
 
       const { error } = await signUp(formData);
