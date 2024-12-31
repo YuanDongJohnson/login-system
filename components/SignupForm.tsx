@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 
-import Toast from '@/components/Toast'; // 确保这是正确的路径
+import Toast from '@/components/Toast';
 
 
 
@@ -23,8 +23,6 @@ interface SignupFormProps {
 
 export function SignupForm({ signUp }: SignupFormProps) {
 
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
   const [formValues, setFormValues] = useState({
 
     email: '',
@@ -35,6 +33,8 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
   });
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const router = useRouter();
 
 
@@ -43,15 +43,13 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
     event.preventDefault();
 
-    const { email, password, confirmPassword } = formValues;
+    const { password, confirmPassword } = formValues;
 
 
 
     if (password !== confirmPassword) {
 
       setToastMessage('密码不匹配，请重新输入');
-
-      setFormValues({ ...formValues, password: '', confirmPassword: '' }); // 重置密码字段
 
       return; // 阻止表单提交
 
@@ -105,9 +103,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
       setToastMessage(null);
 
-      setFormValues({ email: formValues.email, password: '', confirmPassword: '' });
-
-    }, 3300);
+    }, 3000);
 
 
 
@@ -117,7 +113,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
     };
 
-  }, [toastMessage, formValues.email]);
+  }, [toastMessage]);
 
 
 
