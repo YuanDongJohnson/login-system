@@ -18,8 +18,11 @@ export function SignupForm({ signUp }: SignupFormProps) {
     setToastMessage(null);
     const formData = new FormData(event.currentTarget);
     
-    if (formData.get('password') !== formData.get('confirmPassword')) {
-      setToastMessage('密码不匹配');
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+
+    if (password !== confirmPassword) {
+      setToastMessage('密码不匹配，请重新输入');
       return;
     }
 
@@ -49,6 +52,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
         <input
           className="rounded-md px-4 py-2 bg-inherit border mb-6"
           name="email"
+          type="email"
           placeholder="you@example.com"
           required
         />
