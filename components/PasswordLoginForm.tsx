@@ -64,6 +64,12 @@ export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginF
         登录
       </button>
 
+      
+
+      <Link href="/forgot-password" className="text-sm text-indigo-400 text-center mt-2">
+        忘记密码
+      </Link>
+  
       {toastMessage && <Toast message={toastMessage} />}
 
       {searchParams?.message && (
@@ -71,10 +77,6 @@ export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginF
           {searchParams.message}
         </p>
       )}
-
-      <Link href="/forgot-password" className="text-sm text-indigo-400 text-center mt-2">
-        忘记密码
-      </Link>
     </form>
   );
 }
