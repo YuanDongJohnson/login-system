@@ -45,15 +45,15 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
     if (password !== confirmPassword) {
 
-      setToastMessage('密码不匹配，请重新输入'); // 使用 Toast 显示错误信息
+      setToastMessage('密码不匹配，请重新输入');
 
-      return; // 阻止表单提交
+      return; // 阻止表单进一步提交
 
     }
 
 
 
-    // 清除错误信息以便下次提交时可以显示新的错误信息
+    // 清除错误信息，以便进行下一步操作
 
     setToastMessage(null);
 
@@ -183,7 +183,11 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
 
 
-      {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
+      {toastMessage && (
+
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+
+      )}
 
     </>
 
