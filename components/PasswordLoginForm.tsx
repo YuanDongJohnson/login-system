@@ -27,7 +27,7 @@ export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginF
       }
     } catch (error) {
       console.error('Login error:', error);
-      setToastMessage('登录失败，请重试。');
+      setToastMessage('登录失败，请再次确认帐号密码！');
     }
   };
 
