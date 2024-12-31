@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 
-import Toast from '@/components/Toast';
+import Toast from '@/components/Toast'; // 确保这是正确的路径
 
 
 
@@ -25,6 +25,16 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const [formValues, setFormValues] = useState({
+
+    email: '',
+
+    password: '',
+
+    confirmPassword: '',
+
+  });
+
   const router = useRouter();
 
 
@@ -33,13 +43,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-
-    
-
-    const password = formData.get('password') as string;
-
-    const confirmPassword = formData.get('confirmPassword') as string;
+    const { email, password, confirmPassword } = formValues;
 
 
 
@@ -47,21 +51,17 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
       setToastMessage('密码不匹配，请重新输入');
 
-      return; // 阻止表单进一步提交
+      setFormValues({ ...formValues, password: '', confirmPassword: '' }); // 重置密码字段
+
+      return; // 阻止表单提交
 
     }
 
 
 
-    // 清除错误信息，以便进行下一步操作
-
-    setToastMessage(null);
-
-
-
     try {
 
-      const { error } = await signUp(formData);
+      const { error } = await signUp(new FormData([event.currentTarget]));
 
       if (error) {
 
@@ -69,7 +69,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
       } else {
 
-        const email = formData.get('email') as string;
+        const email = formValues.email;
 
         setToastMessage(`请查看邮箱 (${email}) 以完成注册流程`);
 
@@ -84,6 +84,40 @@ export function SignupForm({ signUp }: SignupFormProps) {
     }
 
   };
+
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    const { name, value } = e.target;
+
+    setFormValues({ ...formValues, [name]: value });
+
+  };
+
+
+
+  useEffect(() => {
+
+    if (!toastMessage) return;
+
+    const timer = setTimeout(() => {
+
+      setToastMessage(null);
+
+      setFormValues({ email: formValues.email, password: '', confirmPassword: '' });
+
+    }, 3300);
+
+
+
+    return () => {
+
+      clearTimeout(timer);
+
+    };
+
+  }, [toastMessage, formValues.email]);
 
 
 
@@ -115,6 +149,10 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
           placeholder="you@example.com"
 
+          value={formValues.email}
+
+          onChange={handleChange}
+
           required
 
         />
@@ -129,11 +167,15 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
           className="rounded-md px-4 py-2 bg-inherit border mb-6"
 
-          type="password"
-
           name="password"
 
+          type="password"
+
           placeholder="••••••••"
+
+          value={formValues.password}
+
+          onChange={handleChange}
 
           required
 
@@ -149,11 +191,15 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
           className="rounded-md px-4 py-2 bg-inherit border mb-6"
 
-          type="password"
-
           name="confirmPassword"
 
+          type="password"
+
           placeholder="••••••••"
+
+          value={formValues.confirmPassword}
+
+          onChange={handleChange}
 
           required
 
@@ -183,11 +229,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
 
 
 
-      {toastMessage && (
-
-        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
-
-      )}
+      {toastMessage && <Toast message={toastMessage} />}
 
     </>
 
