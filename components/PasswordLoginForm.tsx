@@ -38,7 +38,7 @@ export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginF
       case 'User not found':
         return '用户不存在';
       default:
-        return '登录失败，请重试';
+        return '登录失败，请再次确认帐号密码！';
     }
   };
 
