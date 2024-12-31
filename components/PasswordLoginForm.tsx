@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Toast from '@/components/Toast';
 
 interface PasswordLoginFormProps {
   searchParams: { message: string };
@@ -11,22 +12,33 @@ interface PasswordLoginFormProps {
 
 export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginFormProps) {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
+    setToastMessage(null);
     const formData = new FormData(event.currentTarget);
     try {
       const result = await signInAction(formData);
       if (result.error) {
-        setError(result.error);
+        setToastMessage(getChineseErrorMessage(result.error));
       } else {
         router.push('/text');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('登录失败，请重试。');
+      setToastMessage('登录失败，请重试。');
+    }
+  };
+
+  const getChineseErrorMessage = (error: string): string => {
+    switch (error) {
+      case 'Invalid credentials':
+        return '用户名或密码错误';
+      case 'User not found':
+        return '用户不存在';
+      default:
+        return '登录失败，请重试';
     }
   };
 
@@ -52,11 +64,7 @@ export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginF
         登录
       </button>
 
-      {error && (
-        <p className="mt-4 p-4 bg-red-100 text-red-600 text-center rounded">
-          {error}
-        </p>
-      )}
+      {toastMessage && <Toast message={toastMessage} />}
 
       {searchParams?.message && (
         <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
@@ -70,3 +78,4 @@ export function PasswordLoginForm({ searchParams, signInAction }: PasswordLoginF
     </form>
   );
 }
+
