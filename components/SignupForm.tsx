@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Toast from '@/components/Toast';
 
 interface SignupFormProps {
-  signUp: (formData: FormData) => Promise<void>;
+  signUp: (formData: FormData) => Promise<{ error: string | null }>;
 }
 
 export function SignupForm({ signUp }: SignupFormProps) {
@@ -24,7 +24,13 @@ export function SignupForm({ signUp }: SignupFormProps) {
     }
 
     try {
-      await signUp(formData);
+      const { error } = await signUp(formData);
+      if (error) {
+        setToastMessage(error);
+      } else {
+        const email = formData.get('email') as string;
+        setToastMessage(`请查看邮箱 (${email}) 以完成注册流程`);
+      }
     } catch (error) {
       console.error('Signup error:', error);
       setToastMessage('注册失败，请重试。');
