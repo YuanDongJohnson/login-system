@@ -1,41 +1,41 @@
-'use client'
+import React, { useState, useEffect } from 'react';
 
-import { useEffect, useState } from 'react'
-
-interface ToastProps {
-  message: string
+interface Props {
+  message: string;
 }
 
-export default function Toast({ message }: ToastProps) {
-  const [isVisible, setIsVisible] = useState(true)
-  const [opacity, setOpacity] = useState(1)
+const Notification: React.FC<Props> = ({ message }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
+    setIsVisible(true);
+    setOpacity(1);
+
     const timer = setTimeout(() => {
-      setOpacity(0)
-    }, 3000)
+      setOpacity(0);
+    }, 3000);
 
     const hideTimer = setTimeout(() => {
-      setIsVisible(false)
-    }, 3300)
+      setIsVisible(false);
+    }, 3300);
 
     return () => {
-      clearTimeout(timer)
-      clearTimeout(hideTimer)
-    }
-  }, [])
+      clearTimeout(timer);
+      clearTimeout(hideTimer);
+    };
+  }, [message]);
 
-  if (!isVisible) return null
+  if (!isVisible) {
+    return null;
+  }
 
   return (
-    <div 
-      className="mt-4 p-4 bg-foreground/10 text-foreground text-center rounded-md"
-      style={{
-        transition: 'opacity 300ms ease-in-out',
-        opacity: opacity
-      }}
-    >
+    <div style={{ opacity: opacity, transition: 'opacity 0.3s ease-in-out' }}>
       {message}
     </div>
-  )
-}
+  );
+};
+
+export default Notification;
+
