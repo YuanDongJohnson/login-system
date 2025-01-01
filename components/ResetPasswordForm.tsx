@@ -22,7 +22,8 @@ export function ResetPasswordForm({ resetPassword, code }: ResetPasswordFormProp
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setToastMessage('密码不匹配，请重新输入');
+      setToastMessage(null); // Reset the toast message
+      setTimeout(() => setToastMessage('密码不匹配，请重新输入'), 0); // Re-trigger the toast
       return;
     }
 
@@ -73,3 +74,4 @@ export function ResetPasswordForm({ resetPassword, code }: ResetPasswordFormProp
     </>
   );
 }
+
