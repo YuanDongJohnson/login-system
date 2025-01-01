@@ -22,7 +22,8 @@ export function SignupForm({ signUp }: SignupFormProps) {
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setToastMessage('密码不匹配，请重新输入');
+      setToastMessage(null); // 重置 toast 消息
+      setTimeout(() => setToastMessage('密码不匹配，请重新输入'), 0); // 重新触发 toast
       return;
     }
 
