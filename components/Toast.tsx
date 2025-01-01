@@ -33,7 +33,13 @@ const Notification: React.FC<Props> = ({ message }) => {
   }
 
   return (
-    <div style={{ opacity: opacity, transition: 'opacity 0.3s ease-in-out' }}>
+    <div 
+      className="mt-4 p-4 bg-foreground/10 text-red-600 text-center rounded-md"
+      style={{
+        transition: 'opacity 300ms ease-in-out',
+        opacity: opacity
+      }}
+    >
       {message}
     </div>
   );
