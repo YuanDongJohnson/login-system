@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Toast from '@/components/Toast';
 
 interface SignupFormProps {
-  signUp: (formData: FormData) => Promise<{ error: string | null }>;
+  signUp: (formData: FormData) => Promise<void>;
 }
 
 export function SignupForm({ signUp }: SignupFormProps) {
@@ -18,22 +18,13 @@ export function SignupForm({ signUp }: SignupFormProps) {
     setToastMessage(null);
     const formData = new FormData(event.currentTarget);
     
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
-
-    if (password !== confirmPassword) {
-      setToastMessage('密码不匹配，请重新输入');
+    if (formData.get('password') !== formData.get('confirmPassword')) {
+      setToastMessage('密码不匹配');
       return;
     }
 
     try {
-      const { error } = await signUp(formData);
-      if (error) {
-        setToastMessage(error);
-      } else {
-        const email = formData.get('email') as string;
-        setToastMessage(`请查看邮箱 (${email}) 以完成注册流程`);
-      }
+      await signUp(formData);
     } catch (error) {
       console.error('Signup error:', error);
       setToastMessage('注册失败，请重试。');
@@ -52,7 +43,6 @@ export function SignupForm({ signUp }: SignupFormProps) {
         <input
           className="rounded-md px-4 py-2 bg-inherit border mb-6"
           name="email"
-          type="email"
           placeholder="you@example.com"
           required
         />
@@ -92,5 +82,3 @@ export function SignupForm({ signUp }: SignupFormProps) {
     </>
   );
 }
-
-​
