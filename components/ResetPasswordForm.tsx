@@ -23,6 +23,8 @@ export function ResetPasswordForm({ resetPassword, code }: ResetPasswordFormProp
 
     if (password !== confirmPassword) {
       setToastMessage('密码不匹配，请重新输入');
+      // 重置密码输入字段
+      (event.target as HTMLFormElement).reset();
       return;
     }
 
@@ -42,6 +44,7 @@ export function ResetPasswordForm({ resetPassword, code }: ResetPasswordFormProp
   return (
     <>
       <form
+        key={toastMessage}
         className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground mb-4"
         onSubmit={handleSubmit}
       >
