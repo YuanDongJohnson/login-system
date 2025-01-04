@@ -1,10 +1,8 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import Script from 'next/script';
 
 export const Text = () => {
   const [dateTime, setDateTime] = useState('');
-  const [walineLoaded, setWalineLoaded] = useState(false);
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -39,7 +37,16 @@ export const Text = () => {
   }, []);
 
   useEffect(() => {
-    if (walineLoaded) {
+    // 动态添加 Waline 的 CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/@waline/client@v3/dist/waline.css';
+    document.head.appendChild(link);
+
+    // 动态添加 Waline 的 JavaScript
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+    script.onload = () => {
       // @ts-ignore
       Waline.init({
         el: '#waline',
@@ -52,19 +59,17 @@ export const Text = () => {
         pageview: true,
         comment: true,
       });
-    }
-  }, [walineLoaded]);
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      document.head.removeChild(link);
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-      <Script 
-        src="https://unpkg.com/@waline/client@v3/dist/waline.js"
-        onLoad={() => setWalineLoaded(true)}
-      />
-      <link 
-        rel="stylesheet" 
-        href="https://unpkg.com/@waline/client@v3/dist/waline.css" 
-      />
       <style jsx>{`
         .writing-vertical-rl {
           writing-mode: vertical-rl;
@@ -113,7 +118,7 @@ export const Text = () => {
             ></iframe>
           </div>
 
-          <div id="waline" className="w-full max-w-2xl mb-8 min-h-[200px]"></div>
+          <div id="waline" className="w-full max-w-2xl mb-8"></div>
 
           <div id="article-info" className="text-center mb-8">
             當前瀏覽量: <span className="waline-pageview-count" />
