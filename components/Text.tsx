@@ -1,15 +1,14 @@
 'use client'
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { init } from '@waline/client';
-import '@waline/client/dist/waline.css';
 
 export const Text = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [dateTime, setDateTime] = useState('');
-  const walineInstanceRef = useRef<any>(null);
-  const walineContainerRef = useRef<HTMLDivElement>(null);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
+  const [pageViews, setPageViews] = useState(0);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -39,26 +38,17 @@ export const Text = () => {
   }, []);
 
   useEffect(() => {
-    if (walineContainerRef.current && !walineInstanceRef.current) {
-      walineInstanceRef.current = init({
-        el: '#waline',
-        serverURL: 'https://message-eight-gules.vercel.app',
-        lang: 'zh-TW',
-        meta: ['nick'],
-        requiredMeta: ['nick'],
-        login: 'disable',
-        copyright: false,
-        pageview: true,
-        comment: true,
-      });
-    }
-
-    return () => {
-      if (walineInstanceRef.current) {
-        walineInstanceRef.current.destroy();
-      }
-    };
+    // 模拟页面浏览量增加
+    setPageViews(prev => prev + 1);
   }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (message.trim()) {
+      setMessages(prev => [...prev, message]);
+      setMessage('');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-btn-background text-foreground animate-in">
@@ -107,10 +97,31 @@ export const Text = () => {
           />
         </div>
 
-        <div id="waline" ref={walineContainerRef} className="my-8">
-          <div id="article-info" className="text-center my-4">
-            當前瀏覽量: <span className="waline-pageview-count" />
+        <div className="my-8">
+          <h2 className="text-2xl font-bold mb-4">留言板</h2>
+          <form onSubmit={handleSubmit} className="mb-4">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full p-2 border rounded"
+              rows={4}
+              placeholder="请留下您的留言..."
+            />
+            <button type="submit" className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              提交留言
+            </button>
+          </form>
+          <div className="space-y-2">
+            {messages.map((msg, index) => (
+              <div key={index} className="p-2 bg-gray-100 rounded">
+                {msg}
+              </div>
+            ))}
           </div>
+        </div>
+
+        <div className="text-center my-4">
+          當前瀏覽量: <span>{pageViews}</span>
         </div>
 
         <div className="bg-btn-background text-foreground p-6 rounded-lg shadow-lg mt-8">
