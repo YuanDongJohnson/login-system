@@ -36,11 +36,14 @@ export const Text = () => {
 
   useEffect(() => {
     // Simulate page view count
-    setPageViews(prev => prev + 1);
+    const storedViews = localStorage.getItem('pageViews');
+    const initialViews = storedViews ? parseInt(storedViews, 10) : 0;
+    setPageViews(initialViews + 1);
+    localStorage.setItem('pageViews', (initialViews + 1).toString());
   }, []);
 
   return (
-    <div className="relative isolate px-6 lg:px-8">
+    <div className="relative isolate">
       <style jsx global>{`
         body, html {
           margin: 0;
@@ -51,14 +54,17 @@ export const Text = () => {
           background-position: 0 0;
           text-align: center;
           overflow-x: hidden;
+          color: black;
         }
         .header {
           position: relative;
           padding: 20px 0;
           background: #fff0f7;
+          margin-bottom: 20px;
         }
         .header h1, .header h2 {
           margin: 0;
+          color: black;
         }
         .date-time {
           position: fixed;
@@ -110,12 +116,14 @@ export const Text = () => {
         }
         .contact-info h2 {
           margin-bottom: 10px;
+          color: white;
         }
         .contact-info p {
           margin: 5px 0;
+          color: white;
         }
         .contact-info a {
-          color: #fff;
+          color: white;
           text-decoration: none;
         }
         .video-container {
@@ -134,6 +142,9 @@ export const Text = () => {
         }
       `}</style>
 
+      {/* 顶部预留的div区块 */}
+      <div className="w-full h-14 bg-background border-b border-foreground/20"></div>
+
       <div className="header">
         <h1>老吳動物模型手工坊</h1>
         <h2>正宗純手工制造</h2>
@@ -144,7 +155,7 @@ export const Text = () => {
         <span>{dateTime}</span>
       </div>
 
-      <div className="mx-auto max-w-2xl pt-20">
+      <div className="mx-auto max-w-2xl pt-20 px-6 lg:px-8">
         <div className="center-content">
           <div className="carousel">
             {[
@@ -165,7 +176,7 @@ export const Text = () => {
           </div>
         </div>
 
-        <h2>制作視頻</h2>
+        <h2 style={{color: 'black'}}>制作視頻</h2>
         <div className="video-container">
           <iframe
             src="https://streamable.com/e/fzzvlw?autoplay=1"
@@ -174,7 +185,7 @@ export const Text = () => {
           />
         </div>
 
-        <div id="article-info">
+        <div id="article-info" style={{color: 'black', marginTop: '20px'}}>
           當前瀏覽量: <span>{pageViews}</span>
         </div>
 
