@@ -8,15 +8,23 @@ export default function ClientContent() {
   const [pageViews, setPageViews] = useState(0);
 
   useEffect(() => {
+    let mounted = true;
     const intervalId = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % 6);
+      if (mounted) {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % 6);
+      }
     }, 8000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      mounted = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {
+    let mounted = true;
     const updateDateTime = () => {
+      if (!mounted) return;
       const now = new Date();
       const year = now.getFullYear();
       const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -30,22 +38,27 @@ export default function ClientContent() {
     const intervalId = setInterval(updateDateTime, 1000);
     updateDateTime();
 
-    return () => clearInterval(intervalId);
+    return () => {
+      mounted = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {
     try {
-      const storedViews = localStorage.getItem('pageViews');
-      const initialViews = storedViews ? parseInt(storedViews, 10) : 0;
-      setPageViews(initialViews + 1);
-      localStorage.setItem('pageViews', (initialViews + 1).toString());
+      if (typeof window !== 'undefined') {
+        const storedViews = localStorage.getItem('pageViews');
+        const initialViews = storedViews ? parseInt(storedViews, 10) : 0;
+        setPageViews(initialViews + 1);
+        localStorage.setItem('pageViews', (initialViews + 1).toString());
+      }
     } catch (error) {
       console.error('Error updating page views:', error);
     }
   }, []);
 
   return (
-    <>
+    <div className="relative isolate px-6 lg:px-8">
       <style jsx global>{`
         body, html {
           margin: 0;
@@ -104,13 +117,13 @@ export default function ClientContent() {
         }
       `}</style>
 
-      <div className="mx-auto max-w-2xl px-4">
+      <div className="mx-auto max-w-2xl">
         <div className="date-time">
           <span>今天是</span>
           <span>{dateTime}</span>
         </div>
 
-        <div className="flex justify-center">
+        <div className="center-content">
           <div className="carousel">
             {[
               "https://ossk.cc/file/2a4dbce26a0a292ec7b9e.jpg",
@@ -131,7 +144,7 @@ export default function ClientContent() {
         </div>
 
         <h2 className="text-2xl font-bold text-black mt-8 mb-4">制作視頻</h2>
-        <div className="mx-auto max-w-xl" style={{ position: 'relative', width: '100%', height: '0px', paddingBottom: '100.000%' }}>
+        <div style={{ position: 'relative', width: 'auto', height: '0px', paddingBottom: '100.000%' }}>
           <iframe
             src="https://streamable.com/e/fzzvlw?autoplay=1"
             allow="fullscreen;autoplay"
@@ -152,7 +165,7 @@ export default function ClientContent() {
           </div>
         </footer>
       </div>
-    </>
+    </div>
   );
 }
 
