@@ -35,7 +35,6 @@ export const Text = () => {
   }, []);
 
   useEffect(() => {
-    // Simulate page view count
     const storedViews = localStorage.getItem('pageViews');
     const initialViews = storedViews ? parseInt(storedViews, 10) : 0;
     setPageViews(initialViews + 1);
@@ -43,7 +42,7 @@ export const Text = () => {
   }, []);
 
   return (
-    <div className="relative isolate">
+    <div className="flex flex-col min-h-screen">
       <style jsx global>{`
         body, html {
           margin: 0;
@@ -54,17 +53,31 @@ export const Text = () => {
           background-position: 0 0;
           text-align: center;
           overflow-x: hidden;
-          color: black;
         }
-        .header {
+        .carousel {
           position: relative;
-          padding: 20px 0;
-          background: #fff0f7;
-          margin-bottom: 20px;
+          width: 220px;
+          height: 180px;
+          margin: 10px auto;
+          border: 2px solid #000;
+          overflow: hidden;
         }
-        .header h1, .header h2 {
-          margin: 0;
-          color: black;
+        .carousel img {
+          width: 220px;
+          height: 180px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          opacity: 0;
+          transition: opacity 0.5s ease-in-out;
+        }
+        .carousel img.active {
+          opacity: 1;
+          animation: scaleUp 0.5s ease-in-out;
+        }
+        @keyframes scaleUp {
+          from { transform: scale(0.5); }
+          to { transform: scale(1); }
         }
         .date-time {
           position: fixed;
@@ -86,77 +99,25 @@ export const Text = () => {
           line-height: 1.5;
           z-index: 1000;
         }
-        .carousel {
-          position: relative;
-          width: 220px;
-          height: 180px;
-          margin: 10px auto;
-          border: 2px solid #000;
-          overflow: hidden;
-        }
-        .carousel img {
-          width: 220px;
-          height: 180px;
-          position: absolute;
-          top: 0;
-          left: 0;
-          opacity: 0;
-          transition: opacity 0.5s ease-in-out;
-        }
-        .carousel img.active {
-          opacity: 1;
-        }
-        .contact-info {
-          background: #343a40;
-          color: #fff;
-          padding: 20px;
-          text-align: center;
-          margin-top: 30px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .contact-info h2 {
-          margin-bottom: 10px;
-          color: white;
-        }
-        .contact-info p {
-          margin: 5px 0;
-          color: white;
-        }
-        .contact-info a {
-          color: white;
-          text-decoration: none;
-        }
-        .video-container {
-          position: relative;
-          width: auto;
-          padding-bottom: 56.25%;
-          margin: auto;
-        }
-        .video-container iframe {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          border: none;
-        }
       `}</style>
 
-      {/* 顶部预留的div区块 */}
-      <div className="w-full h-14 bg-background border-b border-foreground/20"></div>
+      {/* 固定高度的页眉空白区块 */}
+      <header className="h-16 bg-white shadow-md fixed top-0 left-0 right-0 z-50"></header>
 
-      <div className="header">
-        <h1>老吳動物模型手工坊</h1>
-        <h2>正宗純手工制造</h2>
-      </div>
+      {/* 主要内容区域 */}
+      <main className="flex-grow pt-16 pb-8">
+        {/* 固定的标题区块 */}
+        <div className="sticky top-16 bg-[#fff0f7] p-4 shadow-sm z-40">
+          <h1 className="text-2xl font-bold text-black">老吳動物模型手工坊</h1>
+          <h2 className="text-xl text-black">正宗純手工制造</h2>
+        </div>
 
-      <div className="date-time">
-        <span>今天是</span>
-        <span>{dateTime}</span>
-      </div>
+        <div className="date-time">
+          <span>今天是</span>
+          <span>{dateTime}</span>
+        </div>
 
-      <div className="mx-auto max-w-2xl pt-20 px-6 lg:px-8">
-        <div className="center-content">
+        <div className="center-content mt-8">
           <div className="carousel">
             {[
               "https://ossk.cc/file/2a4dbce26a0a292ec7b9e.jpg",
@@ -176,25 +137,29 @@ export const Text = () => {
           </div>
         </div>
 
-        <h2 style={{color: 'black'}}>制作視頻</h2>
-        <div className="video-container">
+        <h2 className="text-2xl font-bold text-black mt-8 mb-4">制作視頻</h2>
+        <div style={{ position: 'relative', width: 'auto', height: '0px', paddingBottom: '100.000%' }}>
           <iframe
             src="https://streamable.com/e/fzzvlw?autoplay=1"
             allow="fullscreen;autoplay"
             allowFullScreen
+            style={{ border: 'none', width: '100%', height: '100%', position: 'absolute', left: '0px', top: '0px', overflow: 'hidden' }}
           />
         </div>
 
-        <div id="article-info" style={{color: 'black', marginTop: '20px'}}>
+        <div className="text-black mt-4">
           當前瀏覽量: <span>{pageViews}</span>
         </div>
+      </main>
 
-        <div className="contact-info">
-          <h2>聯繫方式</h2>
-          <h2>老吳</h2>
-          <p><strong>Line:</strong> <a href="https://line.me/ti/p/5001120">5001120</a></p>
+      {/* 页脚联系信息 */}
+      <footer className="w-full bg-gray-800 text-white py-6 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl font-semibold mb-2">聯繫方式</h2>
+          <h3 className="text-lg mb-1">老吳</h3>
+          <p><strong>Line:</strong> <a href="https://line.me/ti/p/5001120" className="hover:underline">5001120</a></p>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
