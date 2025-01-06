@@ -43,27 +43,9 @@ export default async function TextPage() {
 
         
 
-        {/* Black line under header */}
-
-        <div className="fixed top-[60px] left-0 right-0 h-[1px] bg-black z-40" />
-
-
-
-        {/* Title section fixed below the black line with a gap */}
-
-        <div className="fixed top-[81px] left-0 right-0 bg-[#fff0f7] p-4 z-30">
-
-          <h1 className="text-2xl font-bold text-black">老吳動物模型手工坊</h1>
-
-          <h2 className="text-xl text-black">正宗純手工制造</h2>
-
-        </div>
-
-
-
         {/* Main content with proper spacing */}
 
-        <main className="pt-[160px]">
+        <main className="pt-[60px]">
 
           <ClientContent />
 
