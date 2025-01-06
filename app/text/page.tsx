@@ -35,7 +35,7 @@ export default async function TextPage() {
 
         {/* Header fixed at top with black background */}
 
-        <div className="fixed top-0 left-0 right-0 z-50 bg-black">
+<div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
 
           <Header />
 
