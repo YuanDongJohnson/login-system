@@ -43,10 +43,6 @@ export default async function TextPage() {
 
         
 
-        {/* Line under header */}
-
-        <div className="fixed top-[60px] left-0 right-0 h-[1px] bg-black z-40" />
-
 
 
         {/* Main content with proper spacing */}
