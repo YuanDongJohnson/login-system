@@ -33,9 +33,9 @@ export default async function TextPage() {
 
       <div className="min-h-screen">
 
-        {/* Header fixed at top */}
+        {/* Header fixed at top with black background */}
 
-        <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-black">
 
           <Header />
 
