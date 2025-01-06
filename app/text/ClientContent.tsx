@@ -34,10 +34,14 @@ export default function ClientContent() {
   }, []);
 
   useEffect(() => {
-    const storedViews = localStorage.getItem('pageViews');
-    const initialViews = storedViews ? parseInt(storedViews, 10) : 0;
-    setPageViews(initialViews + 1);
-    localStorage.setItem('pageViews', (initialViews + 1).toString());
+    try {
+      const storedViews = localStorage.getItem('pageViews');
+      const initialViews = storedViews ? parseInt(storedViews, 10) : 0;
+      setPageViews(initialViews + 1);
+      localStorage.setItem('pageViews', (initialViews + 1).toString());
+    } catch (error) {
+      console.error('Error updating page views:', error);
+    }
   }, []);
 
   return (
@@ -100,13 +104,13 @@ export default function ClientContent() {
         }
       `}</style>
 
-      <div className="container mx-auto px-4">
+      <div className="mx-auto max-w-2xl px-4">
         <div className="date-time">
           <span>今天是</span>
           <span>{dateTime}</span>
         </div>
 
-        <div className="center-content mt-8">
+        <div className="flex justify-center">
           <div className="carousel">
             {[
               "https://ossk.cc/file/2a4dbce26a0a292ec7b9e.jpg",
@@ -127,7 +131,7 @@ export default function ClientContent() {
         </div>
 
         <h2 className="text-2xl font-bold text-black mt-8 mb-4">制作視頻</h2>
-        <div style={{ position: 'relative', width: 'auto', height: '0px', paddingBottom: '100.000%' }}>
+        <div className="mx-auto max-w-xl" style={{ position: 'relative', width: '100%', height: '0px', paddingBottom: '100.000%' }}>
           <iframe
             src="https://streamable.com/e/fzzvlw?autoplay=1"
             allow="fullscreen;autoplay"
@@ -151,3 +155,4 @@ export default function ClientContent() {
     </>
   );
 }
+
