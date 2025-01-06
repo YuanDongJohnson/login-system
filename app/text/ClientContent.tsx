@@ -100,53 +100,54 @@ export default function ClientContent() {
         }
       `}</style>
 
-      <div className="date-time">
-        <span>今天是</span>
-        <span>{dateTime}</span>
-      </div>
-
-      <div className="center-content mt-8">
-        <div className="carousel">
-          {[
-            "https://ossk.cc/file/2a4dbce26a0a292ec7b9e.jpg",
-            "https://ossk.cc/file/a549d6369564d95293ec4.jpg",
-            "https://ossk.cc/file/e6cf2f8f673b22749c289.jpg",
-            "https://ossk.cc/file/4d5f87eb47bbbaab727e5.jpg",
-            "https://ossk.cc/file/34b9971cb2ee5a952e708.jpg",
-            "https://ossk.cc/file/be42fb1e0b378ea613071.jpg"
-          ].map((src, index) => (
-            <img
-              key={src}
-              src={src}
-              alt={`Image ${index + 1}`}
-              className={index === currentImageIndex ? 'active' : ''}
-            />
-          ))}
+      <div className="container mx-auto px-4">
+        <div className="date-time">
+          <span>今天是</span>
+          <span>{dateTime}</span>
         </div>
-      </div>
 
-      <h2 className="text-2xl font-bold text-black mt-8 mb-4">制作視頻</h2>
-      <div style={{ position: 'relative', width: 'auto', height: '0px', paddingBottom: '100.000%' }}>
-        <iframe
-          src="https://streamable.com/e/fzzvlw?autoplay=1"
-          allow="fullscreen;autoplay"
-          allowFullScreen
-          style={{ border: 'none', width: '100%', height: '100%', position: 'absolute', left: '0px', top: '0px', overflow: 'hidden' }}
-        />
-      </div>
-
-      <div className="text-black mt-4 mb-8">
-        當前瀏覽量: <span>{pageViews}</span>
-      </div>
-
-      <footer className="w-full bg-gray-800 text-white py-4 px-2 text-sm">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-lg font-semibold mb-2">聯繫方式</h2>
-          <h3 className="text-base mb-1">老吳</h3>
-          <p><strong>Line:</strong> <a href="https://line.me/ti/p/5001120" className="hover:underline">5001120</a></p>
+        <div className="center-content mt-8">
+          <div className="carousel">
+            {[
+              "https://ossk.cc/file/2a4dbce26a0a292ec7b9e.jpg",
+              "https://ossk.cc/file/a549d6369564d95293ec4.jpg",
+              "https://ossk.cc/file/e6cf2f8f673b22749c289.jpg",
+              "https://ossk.cc/file/4d5f87eb47bbbaab727e5.jpg",
+              "https://ossk.cc/file/34b9971cb2ee5a952e708.jpg",
+              "https://ossk.cc/file/be42fb1e0b378ea613071.jpg"
+            ].map((src, index) => (
+              <img
+                key={src}
+                src={src}
+                alt={`Image ${index + 1}`}
+                className={index === currentImageIndex ? 'active' : ''}
+              />
+            ))}
+          </div>
         </div>
-      </footer>
+
+        <h2 className="text-2xl font-bold text-black mt-8 mb-4">制作視頻</h2>
+        <div style={{ position: 'relative', width: 'auto', height: '0px', paddingBottom: '100.000%' }}>
+          <iframe
+            src="https://streamable.com/e/fzzvlw?autoplay=1"
+            allow="fullscreen;autoplay"
+            allowFullScreen
+            style={{ border: 'none', width: '100%', height: '100%', position: 'absolute', left: '0px', top: '0px', overflow: 'hidden' }}
+          />
+        </div>
+
+        <div className="text-black mt-4 mb-8">
+          當前瀏覽量: <span>{pageViews}</span>
+        </div>
+
+        <footer className="w-full bg-gray-800 text-white py-4 px-2 text-sm">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-lg font-semibold mb-2">聯繫方式</h2>
+            <h3 className="text-base mb-1">老吳</h3>
+            <p><strong>Line:</strong> <a href="https://line.me/ti/p/5001120" className="hover:underline">5001120</a></p>
+          </div>
+        </footer>
+      </div>
     </>
   );
 }
-
