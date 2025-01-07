@@ -31,31 +31,25 @@ export default async function TextPage() {
 
     return (
 
-      <div className="min-h-screen">
+      <div className="min-h-screen relative">
 
         {/* Header fixed at top with black background */}
 
-<div style={{ position: 'fixed', top: '-60px', left: 0, right: 0, zIndex: 1000, background: 'black' }}>
-
-  {/* Content goes here */}
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: 'black' }}>
 
           <Header />
 
         </div>
-
-        
 
 
 
         {/* Main content with proper spacing */}
 
         <main className="pt-[200px]">
-       <ClientContent />
-      
+
+          <ClientContent style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }} />
+
         </main>
-
-          
-
 
       </div>
 
