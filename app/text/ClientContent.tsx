@@ -6,7 +6,6 @@ export default function ClientContent() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [dateTime, setDateTime] = useState('');
   const [pageViews, setPageViews] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -21,23 +20,17 @@ export default function ClientContent() {
 
   useEffect(() => {
     let mounted = true;
-    let intervalId: NodeJS.Timeout;
-
-    const startCarousel = () => {
-      intervalId = setInterval(() => {
-        if (mounted && !isPaused) {
-          setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-        }
-      }, 8000);
-    };
-
-    startCarousel();
+    const intervalId = setInterval(() => {
+      if (mounted) {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+      }
+    }, 5000);
 
     return () => {
       mounted = false;
       clearInterval(intervalId);
     };
-  }, [isPaused, images.length]);
+  }, [images.length]);
 
   useEffect(() => {
     let mounted = true;
@@ -75,41 +68,13 @@ export default function ClientContent() {
     }
   }, []);
 
-  const handleImageClick = (index: number) => {
-    setIsPaused(true);
-    setEnlargedImage(images[index]);
-    setCurrentImageIndex(index);
+  const handleImageClick = () => {
+    setEnlargedImage(images[currentImageIndex]);
   };
 
   const handleCloseEnlarged = () => {
-    setIsPaused(false);
     setEnlargedImage(null);
   };
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-    script.async = true;
-    script.onload = () => {
-      // @ts-ignore
-      window.Waline.init({
-        el: '#waline',
-        serverURL: 'https://message-eight-gules.vercel.app',
-        lang: 'zh-TW',
-        meta: ['nick'],
-        requiredMeta: ['nick'],
-        login: 'disable',
-        copyright: false,
-        pageview: true,
-        comment: true,
-      });
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   return (
     <div className="relative isolate px-6 lg:px-8 pb-32">
@@ -187,6 +152,14 @@ export default function ClientContent() {
           max-height: 90%;
           object-fit: contain;
         }
+        #waline {
+          width: auto;
+          height: auto;
+          margin: 20px auto;
+        }
+        #waline:hover {
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
       `}</style>
 
       <div className="mx-auto max-w-2xl">
@@ -196,15 +169,13 @@ export default function ClientContent() {
         </div>
 
         <div className="center-content">
-          <div className="carousel" ref={carouselRef}>
+          <div className="carousel" ref={carouselRef} onClick={handleImageClick}>
             {images.map((src, index) => (
               <img
                 key={src}
                 src={src}
                 alt={`Image ${index + 1}`}
                 className={index === currentImageIndex ? 'active' : ''}
-                onClick={() => index === currentImageIndex && handleImageClick(index)}
-                style={{ cursor: index === currentImageIndex ? 'pointer' : 'default' }}
               />
             ))}
           </div>
@@ -224,9 +195,7 @@ export default function ClientContent() {
           當前瀏覽量: <span>{pageViews}</span>
         </div>
 
-        <div className="mt-8 mb-16">
-          <div id="waline" className="w-full">留言區域</div>
-        </div>
+        <div id="waline" className="mt-8 mb-16">留言區域</div>
       </div>
 
       {enlargedImage && (
@@ -243,6 +212,23 @@ export default function ClientContent() {
         </div>
       </footer>
 
+      <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+      <script type="module" dangerouslySetInnerHTML={{
+        __html: `
+          import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+          init({
+            el: '#waline',
+            serverURL: 'https://message-eight-gules.vercel.app',
+            lang: 'zh-TW',
+            meta: ['nick'],
+            requiredMeta: ['nick'],
+            login: 'disable',
+            copyright: false,
+            pageview: true,
+            comment: true,
+          });
+        `
+      }} />
     </div>
   );
 }
