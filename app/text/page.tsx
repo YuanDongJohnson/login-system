@@ -49,11 +49,10 @@ export default async function TextPage() {
 
         {/* Main content with proper spacing */}
 
-        <main className="pt-[100px]">
+        
 
           <ClientContent />
 
-        </main>
 
       </div>
 
