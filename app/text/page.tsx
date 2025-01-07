@@ -49,9 +49,12 @@ export default async function TextPage() {
 
         {/* Main content with proper spacing */}
 
-        
+        <main className="pt-[200px]">
+       <ClientContent />
+      
+        </main>
 
-          <ClientContent />
+          
 
 
       </div>
