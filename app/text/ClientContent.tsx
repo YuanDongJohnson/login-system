@@ -21,11 +21,17 @@ export default function ClientContent() {
 
   useEffect(() => {
     let mounted = true;
-    const intervalId = setInterval(() => {
-      if (mounted && !isPaused) {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }
-    }, 8000);
+    let intervalId: NodeJS.Timeout;
+
+    const startCarousel = () => {
+      intervalId = setInterval(() => {
+        if (mounted && !isPaused) {
+          setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+        }
+      }, 8000);
+    };
+
+    startCarousel();
 
     return () => {
       mounted = false;
@@ -72,12 +78,38 @@ export default function ClientContent() {
   const handleImageClick = (index: number) => {
     setIsPaused(true);
     setEnlargedImage(images[index]);
+    setCurrentImageIndex(index);
   };
 
   const handleCloseEnlarged = () => {
     setIsPaused(false);
     setEnlargedImage(null);
   };
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+    script.async = true;
+    script.onload = () => {
+      // @ts-ignore
+      window.Waline.init({
+        el: '#waline',
+        serverURL: 'https://message-eight-gules.vercel.app',
+        lang: 'zh-TW',
+        meta: ['nick'],
+        requiredMeta: ['nick'],
+        login: 'disable',
+        copyright: false,
+        pageview: true,
+        comment: true,
+      });
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <div className="relative isolate px-6 lg:px-8 pb-32">
@@ -171,7 +203,8 @@ export default function ClientContent() {
                 src={src}
                 alt={`Image ${index + 1}`}
                 className={index === currentImageIndex ? 'active' : ''}
-                onClick={() => handleImageClick(index)}
+                onClick={() => index === currentImageIndex && handleImageClick(index)}
+                style={{ cursor: index === currentImageIndex ? 'pointer' : 'default' }}
               />
             ))}
           </div>
@@ -210,22 +243,6 @@ export default function ClientContent() {
         </div>
       </footer>
 
-      <script type="module" dangerouslySetInnerHTML={{
-        __html: `
-          import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-          init({
-            el: '#waline',
-            serverURL: 'https://message-eight-gules.vercel.app',
-            lang: 'zh-TW',
-            meta: ['nick'],
-            requiredMeta: ['nick'],
-            login: 'disable',
-            copyright: false,
-            pageview: true,
-            comment: true,
-          });
-        `
-      }} />
     </div>
   );
 }
