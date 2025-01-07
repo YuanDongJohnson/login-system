@@ -1,17 +1,29 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function ClientContent() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [dateTime, setDateTime] = useState('');
   const [pageViews, setPageViews] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const images = [
+    "https://ossk.cc/file/2a4dbce26a0a292ec7b9e.jpg",
+    "https://ossk.cc/file/a549d6369564d95293ec4.jpg",
+    "https://ossk.cc/file/e6cf2f8f673b22749c289.jpg",
+    "https://ossk.cc/file/4d5f87eb47bbbaab727e5.jpg",
+    "https://ossk.cc/file/34b9971cb2ee5a952e708.jpg",
+    "https://ossk.cc/file/be42fb1e0b378ea613071.jpg"
+  ];
 
   useEffect(() => {
     let mounted = true;
     const intervalId = setInterval(() => {
-      if (mounted) {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % 6);
+      if (mounted && !isPaused) {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
       }
     }, 8000);
 
@@ -19,7 +31,7 @@ export default function ClientContent() {
       mounted = false;
       clearInterval(intervalId);
     };
-  }, []);
+  }, [isPaused, images.length]);
 
   useEffect(() => {
     let mounted = true;
@@ -57,8 +69,18 @@ export default function ClientContent() {
     }
   }, []);
 
+  const handleImageClick = (index: number) => {
+    setIsPaused(true);
+    setEnlargedImage(images[index]);
+  };
+
+  const handleCloseEnlarged = () => {
+    setIsPaused(false);
+    setEnlargedImage(null);
+  };
+
   return (
-    <div className="relative isolate px-6 lg:px-8 pb-32"> {/* Added padding bottom for footer */}
+    <div className="relative isolate px-6 lg:px-8 pb-32">
       <style jsx global>{`
         body, html {
           margin: 0;
@@ -86,6 +108,7 @@ export default function ClientContent() {
           left: 0;
           opacity: 0;
           transition: opacity 0.5s ease-in-out;
+          cursor: pointer;
         }
         .carousel img.active {
           opacity: 1;
@@ -115,6 +138,23 @@ export default function ClientContent() {
           line-height: 1.5;
           z-index: 1000;
         }
+        .enlarged-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1001;
+        }
+        .enlarged-image {
+          max-width: 90%;
+          max-height: 90%;
+          object-fit: contain;
+        }
       `}</style>
 
       <div className="mx-auto max-w-2xl">
@@ -124,20 +164,14 @@ export default function ClientContent() {
         </div>
 
         <div className="center-content">
-          <div className="carousel">
-            {[
-              "https://ossk.cc/file/2a4dbce26a0a292ec7b9e.jpg",
-              "https://ossk.cc/file/a549d6369564d95293ec4.jpg",
-              "https://ossk.cc/file/e6cf2f8f673b22749c289.jpg",
-              "https://ossk.cc/file/4d5f87eb47bbbaab727e5.jpg",
-              "https://ossk.cc/file/34b9971cb2ee5a952e708.jpg",
-              "https://ossk.cc/file/be42fb1e0b378ea613071.jpg"
-            ].map((src, index) => (
+          <div className="carousel" ref={carouselRef}>
+            {images.map((src, index) => (
               <img
                 key={src}
                 src={src}
                 alt={`Image ${index + 1}`}
                 className={index === currentImageIndex ? 'active' : ''}
+                onClick={() => handleImageClick(index)}
               />
             ))}
           </div>
@@ -156,9 +190,18 @@ export default function ClientContent() {
         <div className="text-black mt-4 mb-8">
           當前瀏覽量: <span>{pageViews}</span>
         </div>
+
+        <div className="mt-8 mb-16">
+          <div id="waline" className="w-full">留言區域</div>
+        </div>
       </div>
 
-      {/* Footer moved outside max-w-2xl and made fixed */}
+      {enlargedImage && (
+        <div className="enlarged-overlay" onClick={handleCloseEnlarged}>
+          <img src={enlargedImage} alt="Enlarged" className="enlarged-image" />
+        </div>
+      )}
+
       <footer className="fixed bottom-0 left-0 right-0 w-full bg-gray-800 text-white py-4 px-2 text-center">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-lg font-semibold mb-2">聯繫方式</h2>
@@ -166,6 +209,23 @@ export default function ClientContent() {
           <p><strong>Line:</strong> <a href="https://line.me/ti/p/5001120" className="hover:underline">5001120</a></p>
         </div>
       </footer>
+
+      <script type="module" dangerouslySetInnerHTML={{
+        __html: `
+          import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+          init({
+            el: '#waline',
+            serverURL: 'https://message-eight-gules.vercel.app',
+            lang: 'zh-TW',
+            meta: ['nick'],
+            requiredMeta: ['nick'],
+            login: 'disable',
+            copyright: false,
+            pageview: true,
+            comment: true,
+          });
+        `
+      }} />
     </div>
   );
 }
