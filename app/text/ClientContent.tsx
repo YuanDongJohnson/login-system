@@ -195,11 +195,7 @@ export default function ClientContent() {
           當前瀏覽量: <span>{pageViews}</span>
         </div>
 
-        
-<div id="waline" className="mt-8 mb-16">
-
-  <span style="color: black;">留言區域</span>
-
+        <div id="waline" className="mt-8 mb-16"><span className="text-black">留言區域</span></div>
 
       </div>
 
