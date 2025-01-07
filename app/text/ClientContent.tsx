@@ -58,7 +58,7 @@ export default function ClientContent() {
   }, []);
 
   return (
-    <div className="relative isolate px-6 lg:px-8">
+    <div className="relative isolate px-6 lg:px-8 pb-32"> {/* Added padding bottom for footer */}
       <style jsx global>{`
         body, html {
           margin: 0;
@@ -156,15 +156,16 @@ export default function ClientContent() {
         <div className="text-black mt-4 mb-8">
           當前瀏覽量: <span>{pageViews}</span>
         </div>
-
-        <footer className="w-full bg-gray-800 text-white py-4 px-2 text-sm">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-lg font-semibold mb-2">聯繫方式</h2>
-            <h3 className="text-base mb-1">老吳</h3>
-            <p><strong>Line:</strong> <a href="https://line.me/ti/p/5001120" className="hover:underline">5001120</a></p>
-          </div>
-        </footer>
       </div>
+
+      {/* Footer moved outside max-w-2xl and made fixed */}
+      <footer className="fixed bottom-0 left-0 right-0 w-full bg-gray-800 text-white py-4 px-2 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-lg font-semibold mb-2">聯繫方式</h2>
+          <h3 className="text-base mb-1">老吳</h3>
+          <p><strong>Line:</strong> <a href="https://line.me/ti/p/5001120" className="hover:underline">5001120</a></p>
+        </div>
+      </footer>
     </div>
   );
 }
