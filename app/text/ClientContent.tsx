@@ -219,7 +219,7 @@ export default function ClientContent() {
           import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
           init({
             el: '#waline',
-            serverURL: 'https://message-nu-ecru.vercel.app',
+            serverURL: 'https://laowuspeaker.newteam.7749.org/',
             lang: 'zh-TW',
             meta: ['nick'],
             requiredMeta: ['nick'],
