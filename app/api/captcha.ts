@@ -1,13 +1,15 @@
 
-// app/api/captcha.js
+// app/api/captcha.ts
 
 import { createCanvas } from 'canvas';
 
 import LRUCache from 'lru-cache';
 
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 
-const captchaCache = new LRUCache({
+
+const captchaCache = new LRUCache<string, string>({
 
   max: 1000,
 
@@ -17,7 +19,7 @@ const captchaCache = new LRUCache({
 
 
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   if (req.method === 'GET') {
 
