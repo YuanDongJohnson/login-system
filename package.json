@@ -9,6 +9,8 @@
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
     "autoprefixer": "10.4.17",
+    "canvas": "^2.11.0",
+    "crypto": "^1.0.1",
     "geist": "^1.2.1",
     "next": "latest",
     "postcss": "8.4.33",
