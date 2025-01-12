@@ -15,12 +15,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "tailwindcss": "3.4.1",
-    "typescript": "5.3.3",
-    "react-hook-form": "latest",
-    "@hookform/resolvers": "latest",
-    "yup": "latest",
-    "react-simple-captcha": "latest",
-    "lucide-react": "latest"
+    "typescript": "5.3.3"
   },
   "devDependencies": {
     "@types/node": "20.11.5",
@@ -29,4 +24,3 @@
     "encoding": "^0.1.13"
   }
 }
-
