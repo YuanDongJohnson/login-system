@@ -19,7 +19,8 @@
     "react-hook-form": "latest",
     "@hookform/resolvers": "latest",
     "yup": "latest",
-    "react-simple-captcha": "latest"
+    "react-simple-captcha": "latest",
+    "lucide-react": "latest"
   },
   "devDependencies": {
     "@types/node": "20.11.5",
@@ -28,3 +29,4 @@
     "encoding": "^0.1.13"
   }
 }
+
