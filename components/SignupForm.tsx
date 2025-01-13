@@ -109,12 +109,15 @@ export function SignupForm({ signUp }: SignupFormProps) {
               name="captcha"
               placeholder="输入验证码"
               required
+              maxLength={4}
             />
             {captchaError && (
               <p className="text-red-500 text-sm mt-1">{captchaError}</p>
             )}
           </div>
-          <Captcha onRefresh={handleCaptchaRefresh} />
+          <div>
+            <Captcha onRefresh={handleCaptchaRefresh} />
+          </div>
         </div>
         <button type="submit" className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
           注册
