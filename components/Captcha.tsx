@@ -19,20 +19,20 @@ export function Captcha({ onRefresh }: CaptchaProps) {
     ctx.fillStyle = '#f0f0f0';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let captcha = '';
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       captcha += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     setCaptchaText(captcha);
 
-    ctx.font = 'bold 24px Arial';
+    ctx.font = 'bold 30px Arial';
     ctx.fillStyle = '#333';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
 
     for (let i = 0; i < captcha.length; i++) {
-      const x = (i + 1) * 25;
+      const x = 50 + i * 40;
       const y = canvas.height / 2 + (Math.random() - 0.5) * 10;
       ctx.fillText(captcha[i], x, y);
     }
@@ -58,7 +58,7 @@ export function Captcha({ onRefresh }: CaptchaProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <canvas ref={canvasRef} width="150" height="50" className="border border-gray-300" />
+      <canvas ref={canvasRef} width="200" height="50" className="border border-gray-300" />
       <button
         type="button"
         onClick={handleRefresh}
