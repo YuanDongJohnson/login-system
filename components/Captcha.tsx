@@ -4,9 +4,10 @@ import React, { useRef, useEffect, useState } from 'react';
 
 interface CaptchaProps {
   onRefresh: () => void;
+  onCaptchaChange: (captcha: string) => void;
 }
 
-export function Captcha({ onRefresh }: CaptchaProps) {
+export function Captcha({ onRefresh, onCaptchaChange }: CaptchaProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [captchaText, setCaptchaText] = useState('');
 
@@ -25,6 +26,7 @@ export function Captcha({ onRefresh }: CaptchaProps) {
       captcha += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     setCaptchaText(captcha);
+    onCaptchaChange(captcha);
 
     ctx.font = 'bold 30px Arial';
     ctx.fillStyle = '#333';
