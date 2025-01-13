@@ -14,6 +14,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [captchaText, setCaptchaText] = useState('');
   const [captchaError, setCaptchaError] = useState<string | null>(null);
+  const [currentCaptcha, setCurrentCaptcha] = useState(''); // Added state for current CAPTCHA
   const router = useRouter();
   const captchaInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,7 +33,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
       return;
     }
 
-    if (!validateCaptcha(captchaInput, captchaText)) {
+    if (!validateCaptcha(captchaInput, currentCaptcha)) { // Updated to use currentCaptcha
       setCaptchaError('验证码错误，请重新输入');
       if (captchaInputRef.current) {
         captchaInputRef.current.value = '';
@@ -59,6 +60,10 @@ export function SignupForm({ signUp }: SignupFormProps) {
     if (captchaInputRef.current) {
       captchaInputRef.current.value = '';
     }
+  };
+
+  const updateCaptcha = (newCaptcha: string) => { // Added function to update CAPTCHA
+    setCurrentCaptcha(newCaptcha);
   };
 
   return (
@@ -116,7 +121,7 @@ export function SignupForm({ signUp }: SignupFormProps) {
             )}
           </div>
           <div>
-            <Captcha onRefresh={handleCaptchaRefresh} />
+            <Captcha onRefresh={handleCaptchaRefresh} onCaptchaChange={updateCaptcha} /> {/* Updated Captcha component */}
           </div>
         </div>
         <button type="submit" className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
