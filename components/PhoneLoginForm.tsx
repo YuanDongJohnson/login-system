@@ -5,80 +5,36 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import Toast from './Toast';
 
-// 修改为默认导出
-export default function PhoneLoginForm() {
+export function PhoneLoginForm() {
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [message, setMessage] = useState('');
   const supabase = createClient();
   const router = useRouter();
 
   const getQRcode = async () => {
-    if (!phone || phone.trim() === '') {
-      setToastMessage('请输入手机号码');
-      return;
-    }
-    setIsSendingCode(true);
-    setToastMessage(null);
-    try {
-      let { data, error } = await supabase.auth.signInWithOtp({
-        phone: phone,
-      });
-      if (error) {
-        setToastMessage(getChineseErrorMessage(error.message));
-      } else {
-        setToastMessage('验证码已发送至您的手机，请注意查收。');
-      }
-    } catch (error) {
-      setToastMessage('发送验证码失败，请稍后重试');
-    } finally {
-      setIsSendingCode(false);
+    let { data, error } = await supabase.auth.signInWithOtp({
+      phone: phone,
+    });
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setMessage('验证码已发送至您的手机，请注意查收。');
     }
   };
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verificationCode || verificationCode.trim() === '') {
-      setToastMessage('请输入验证码');
-      return;
-    }
-    setToastMessage(null);
-    setIsLoading(true);
-    try {
-      let { data, error } = await supabase.auth.verifyOtp({
-        phone: phone,
-        token: verificationCode,
-        type: 'sms',
-      });
-      if (error) {
-        setToastMessage(getChineseErrorMessage(error.message));
-      } else {
-        setToastMessage('验证成功，正在登录...');
-        router.push('/text');
-      }
-    } catch (error) {
-      setToastMessage('验证失败，请稍后重试');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getChineseErrorMessage = (error: string): string => {
-    switch (error) {
-      case 'Invalid phone number':
-        return '无效的电话号码';
-      case 'Invalid OTP':
-        return '验证码错误，请重新输入';
-      case 'Phone number not found':
-        return '该电话号码未注册';
-      case 'Unsupported phone provider':
-        return '不支持的手机运营商';
-      case 'One of email or phone must be set':
-        return '请输入手机号码';
-      default:
-        return '操作失败，请稍后重试';
+    let { data, error } = await supabase.auth.verifyOtp({
+      phone: phone,
+      token: verificationCode,
+      type: 'sms',
+    });
+    if (error) {
+      setMessage('验证码输入错误，请重新输入。');
+    } else {
+      setMessage('验证成功，正在登录...');
+      router.push('/text');
     }
   };
 
@@ -102,23 +58,15 @@ export default function PhoneLoginForm() {
         <button
           type="button"
           onClick={getQRcode}
-          disabled={isSendingCode}
-          className="bg-indigo-700 rounded-md px-2 py-2 text-foreground mb-4 h-10 w-28 sm:w-32 flex items-center justify-center"
+          className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-4 h-10 text-sm"
         >
-          <span className="text-xs sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis">
-            {isSendingCode ? '发送中...' : '获取验证码'}
-          </span>
+          获取验证码
         </button>
       </div>
-      <button 
-        className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2"
-        disabled={isLoading}
-        type="submit"
-      >
-        {isLoading ? '登录中...' : '登录/注册'}
+      <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
+        登录/注册
       </button>
-      {toastMessage && toastMessage.trim() !== '' && <Toast message={toastMessage} />}
+      <Toast message={message} />
     </form>
   );
 }
-
