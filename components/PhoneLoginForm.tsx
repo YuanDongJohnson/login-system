@@ -8,8 +8,7 @@ import Toast from './Toast';
 export function PhoneLoginForm() {
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
-  const [toastMessage, setToastMessage] = useState('');
-  const [showToast, setShowToast] = useState(false);
+  const [message, setMessage] = useState('');
   const supabase = createClient();
   const router = useRouter();
 
@@ -18,11 +17,10 @@ export function PhoneLoginForm() {
       phone: phone,
     });
     if (error) {
-      setToastMessage(error.message);
+      setMessage(error.message);
     } else {
-      setToastMessage('验证码已发送至您的手机，请注意查收。');
+      setMessage('验证码已发送至您的手机，请注意查收。');
     }
-    setShowToast(true);
   };
 
   const signIn = async (e: React.FormEvent) => {
@@ -33,14 +31,10 @@ export function PhoneLoginForm() {
       type: 'sms',
     });
     if (error) {
-      setToastMessage(error.message);
-      setShowToast(true);
+      setMessage('验证码输入错误，请重新输入。');
     } else {
-      setToastMessage('验证成功，正在登录...');
-      setShowToast(true);
-      setTimeout(() => {
-        router.push('/text');
-      }, 2000);
+      setMessage('验证成功，正在登录...');
+      router.push('/text');
     }
   };
 
@@ -72,7 +66,7 @@ export function PhoneLoginForm() {
       <button className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2">
         登录/注册
       </button>
-      <Toast message={toastMessage} show={showToast} onHide={() => setShowToast(false)} />
+      <Toast message={message} />
     </form>
   );
 }
