@@ -5,7 +5,8 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import Toast from './Toast';
 
-export function PhoneLoginForm() {
+// 修改为默认导出
+export default function PhoneLoginForm() {
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -21,14 +22,19 @@ export function PhoneLoginForm() {
     }
     setIsSendingCode(true);
     setToastMessage(null);
-    let { data, error } = await supabase.auth.signInWithOtp({
-      phone: phone,
-    });
-    setIsSendingCode(false);
-    if (error) {
-      setToastMessage(getChineseErrorMessage(error.message));
-    } else {
-      setToastMessage('验证码已发送至您的手机，请注意查收。');
+    try {
+      let { data, error } = await supabase.auth.signInWithOtp({
+        phone: phone,
+      });
+      if (error) {
+        setToastMessage(getChineseErrorMessage(error.message));
+      } else {
+        setToastMessage('验证码已发送至您的手机，请注意查收。');
+      }
+    } catch (error) {
+      setToastMessage('发送验证码失败，请稍后重试');
+    } finally {
+      setIsSendingCode(false);
     }
   };
 
@@ -40,17 +46,22 @@ export function PhoneLoginForm() {
     }
     setToastMessage(null);
     setIsLoading(true);
-    let { data, error } = await supabase.auth.verifyOtp({
-      phone: phone,
-      token: verificationCode,
-      type: 'sms',
-    });
-    setIsLoading(false);
-    if (error) {
-      setToastMessage(getChineseErrorMessage(error.message));
-    } else {
-      setToastMessage('验证成功，正在登录...');
-      router.push('/text');
+    try {
+      let { data, error } = await supabase.auth.verifyOtp({
+        phone: phone,
+        token: verificationCode,
+        type: 'sms',
+      });
+      if (error) {
+        setToastMessage(getChineseErrorMessage(error.message));
+      } else {
+        setToastMessage('验证成功，正在登录...');
+        router.push('/text');
+      }
+    } catch (error) {
+      setToastMessage('验证失败，请稍后重试');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,6 +113,7 @@ export function PhoneLoginForm() {
       <button 
         className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2"
         disabled={isLoading}
+        type="submit"
       >
         {isLoading ? '登录中...' : '登录/注册'}
       </button>
