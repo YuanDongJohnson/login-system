@@ -15,6 +15,10 @@ export function PhoneLoginForm() {
   const router = useRouter();
 
   const getQRcode = async () => {
+    if (!phone || phone.trim() === '') {
+      setToastMessage('请输入手机号码');
+      return;
+    }
     setIsSendingCode(true);
     setToastMessage(null);
     let { data, error } = await supabase.auth.signInWithOtp({
@@ -30,6 +34,10 @@ export function PhoneLoginForm() {
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!verificationCode || verificationCode.trim() === '') {
+      setToastMessage('请输入验证码');
+      return;
+    }
     setToastMessage(null);
     setIsLoading(true);
     let { data, error } = await supabase.auth.verifyOtp({
@@ -54,6 +62,10 @@ export function PhoneLoginForm() {
         return '验证码错误，请重新输入';
       case 'Phone number not found':
         return '该电话号码未注册';
+      case 'Unsupported phone provider':
+        return '不支持的手机运营商';
+      case 'One of email or phone must be set':
+        return '请输入手机号码';
       default:
         return '操作失败，请稍后重试';
     }
