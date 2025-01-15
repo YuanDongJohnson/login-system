@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import Toast from './Toast';
@@ -10,9 +10,16 @@ export function PhoneLoginForm() {
   const [verificationCode, setVerificationCode] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   const supabase = createClient();
   const router = useRouter();
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   const getVerificationCode = async () => {
     setIsLoading(true);
@@ -24,15 +31,15 @@ export function PhoneLoginForm() {
     if (error) {
       setToastMessage(getChineseErrorMessage(error.message));
     } else {
-      setIsCodeSent(true);
       setToastMessage('验证码已发送至您的手机，请注意查收。');
+      setCountdown(60);
     }
   };
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isCodeSent) {
-      await getVerificationCode();
+    if (!verificationCode) {
+      setToastMessage('请输入验证码');
       return;
     }
     setToastMessage(null);
@@ -79,22 +86,22 @@ export function PhoneLoginForm() {
           placeholder="验证码"
           value={verificationCode}
           onChange={(e) => setVerificationCode(e.target.value)}
-          required={isCodeSent}
+          required
         />
         <button
           type="button"
           onClick={getVerificationCode}
-          disabled={isLoading}
-          className="bg-indigo-700 rounded-md px-2 py-1 text-foreground mb-4 h-10 text-xs sm:text-sm sm:px-4 sm:py-2"
+          disabled={countdown > 0 || isLoading}
+          className="bg-indigo-700 rounded-md px-2 py-1 text-foreground mb-4 h-10 text-xs sm:text-sm sm:px-4 sm:py-2 whitespace-nowrap"
         >
-          {isLoading ? '发送中...' : '获取验证码'}
+          {countdown > 0 ? `${countdown}秒后重试` : isLoading ? '发送中...' : '获取验证码'}
         </button>
       </div>
       <button 
         className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2"
-        disabled={isLoading || (isCodeSent && !verificationCode)}
+        disabled={isLoading}
       >
-        {isLoading ? '处理中...' : isCodeSent ? '登录' : '获取验证码'}
+        {isLoading ? '登录中...' : '登录'}
       </button>
       {toastMessage && <Toast message={toastMessage} />}
     </form>
