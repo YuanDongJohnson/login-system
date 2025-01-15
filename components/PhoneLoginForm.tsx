@@ -10,10 +10,11 @@ export function PhoneLoginForm() {
   const [verificationCode, setVerificationCode] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCodeSent, setIsCodeSent] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
-  const getQRcode = async () => {
+  const getVerificationCode = async () => {
     setIsLoading(true);
     setToastMessage(null);
     let { data, error } = await supabase.auth.signInWithOtp({
@@ -23,12 +24,17 @@ export function PhoneLoginForm() {
     if (error) {
       setToastMessage(getChineseErrorMessage(error.message));
     } else {
+      setIsCodeSent(true);
       setToastMessage('验证码已发送至您的手机，请注意查收。');
     }
   };
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isCodeSent) {
+      await getVerificationCode();
+      return;
+    }
     setToastMessage(null);
     setIsLoading(true);
     let { data, error } = await supabase.auth.verifyOtp({
@@ -73,24 +79,22 @@ export function PhoneLoginForm() {
           placeholder="验证码"
           value={verificationCode}
           onChange={(e) => setVerificationCode(e.target.value)}
-          required
+          required={isCodeSent}
         />
         <button
           type="button"
-          onClick={getQRcode}
+          onClick={getVerificationCode}
           disabled={isLoading}
-          className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-4 h-10"
+          className="bg-indigo-700 rounded-md px-2 py-1 text-foreground mb-4 h-10 text-xs sm:text-sm sm:px-4 sm:py-2"
         >
-          <span className="text-sm">
-            {isLoading ? '发送中...' : '获取验证码'}
-          </span>
+          {isLoading ? '发送中...' : '获取验证码'}
         </button>
       </div>
       <button 
         className="bg-indigo-700 rounded-md px-4 py-2 text-foreground mb-2"
-        disabled={isLoading}
+        disabled={isLoading || (isCodeSent && !verificationCode)}
       >
-        {isLoading ? '登录中...' : '登录/注册'}
+        {isLoading ? '处理中...' : isCodeSent ? '登录' : '获取验证码'}
       </button>
       {toastMessage && <Toast message={toastMessage} />}
     </form>
