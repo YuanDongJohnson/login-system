@@ -10,6 +10,7 @@ export function PhoneLoginForm() {
   const [verificationCode, setVerificationCode] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const supabase = createClient();
   const router = useRouter();
@@ -22,12 +23,12 @@ export function PhoneLoginForm() {
   }, [countdown]);
 
   const getVerificationCode = async () => {
-    setIsLoading(true);
+    setIsSendingCode(true);
     setToastMessage(null);
     let { data, error } = await supabase.auth.signInWithOtp({
       phone: phone,
     });
-    setIsLoading(false);
+    setIsSendingCode(false);
     if (error) {
       setToastMessage(getChineseErrorMessage(error.message));
     } else {
@@ -91,10 +92,10 @@ export function PhoneLoginForm() {
         <button
           type="button"
           onClick={getVerificationCode}
-          disabled={countdown > 0 || isLoading}
+          disabled={countdown > 0 || isSendingCode}
           className="bg-indigo-700 rounded-md px-2 py-1 text-foreground mb-4 h-10 text-xs sm:text-sm sm:px-4 sm:py-2 whitespace-nowrap"
         >
-          {countdown > 0 ? `${countdown}秒后重试` : isLoading ? '发送中...' : '获取验证码'}
+          {countdown > 0 ? `${countdown}秒后重试` : isSendingCode ? '发送中...' : '获取验证码'}
         </button>
       </div>
       <button 
